@@ -20,7 +20,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Downloads\mmemory.h">
+    <ClInclude Include="mmemory.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
