@@ -1,48 +1,107 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "mmemory.h"
+#include "segment_table.h"
+#include "adress_spaces.h"
 
-#define VIRTUAL_ADRESS_SPACE_SIZE		1024 * 1024;
-#define LAST_ACCESSIBLE_VIRTUAL_ADRESS	(VIRTUAL_ADRESS_SPACE_SIZE / sizeof(VA) - 1);
+/*
+	va	- virtual adress
+	vas - virtual adress space
 
-VA firstFreeVirtualAdress = NULL;
+	pa	- physical adress
+	p	- physical
+*/
 
+/**
+	@func	_malloc
+	@brief	Выделяет блок памяти определенного размера
 
-typedef struct {
-	VA	startingVirtualAdress;
-	int size;
-} Segment;
+	@param	[out] ptr		адресс блока
+	@param	[in]  szBlock	размер блока
 
-typedef struct {
-	Segment segment;
-	void*	physicalAdress;
-	bool	isInPhysicalMemory;
-} SegmentTableRecord;
+	@return	код ошибки
+	@retval	0	успешное выполнение
+	@retval	-1	неверные параметры
+	@retval	-2	нехватка памяти
+	@retval	1	неизвестная ошибка
+ **/
+int _malloc (VA* ptr, size_t szBlock) {
 
-typedef struct {
-	SegmentTableRecord* firstRecord;
-	int					size;
-} SegmentTable;
-
-#define SEGMENT_TABLE_RECORDS_COUNT_DEFAULT 1000;
-#define SEGMENT_TABLE_SIZE_DEFAULT			(sizeof(SegmentTable) + sizeof(SegmentTableRecord) * SEGMENT_TABLE_RECORDS_COUNT_DEFAULT);
-
-SegmentTable* segmentTable;
+}
 
 
-void create_record (VA*		segmentVirtualAdress,
-					size_t	segmentSize) 
-{
-	SegmentTableRecord* recordPtr = segmentTable->firstRecord + segmentTable->size;
 
-	SegmentTableRecord recordInfo;
-	recordInfo.physicalAdress = NULL;
-	recordInfo.isInPhysicalMemory = false;
-	recordInfo.segment.startingVirtualAdress = segmentVirtualAdress;
-	recordInfo.segment.size = segmentSize;
+/**
+	@func	_free
+	@brief	Удаление блока памяти
 
-	memcpy((void*)recordPtr, (void*)&recordInfo, sizeof(SegmentTableRecord));
+	@param	[in] ptr		адресс блока
 
-	segmentTable->size++;
-	firstFreeVirtualAdress = segmentVirtualAdress + segmentSize - 1;
+	@return	код ошибки
+	@retval	0	успешное выполнение
+	@retval	-1	неверные параметры
+	@retval	1	неизвестная ошибка
+ **/
+int _free(VA ptr) {
+
+}
+
+
+
+/**
+	@func	_read
+	@brief	Чтение информации из блока памяти
+
+	@param	[in] ptr		адресс блока
+	@param	[in] pBuffer	адресс буфера куда копируется инфомация
+	@param	[in] szBuffer	размер буфера
+
+	@return	код ошибки
+	@retval	0	успешное выполнение
+	@retval	-1	неверные параметры
+	@retval	-2	доступ за пределы блока
+	@retval	1	неизвестная ошибка
+ **/
+int _read(VA ptr, void* pBuffer, size_t szBuffer) {
+
+}
+
+
+
+/**
+	@func	_write
+	@brief	Запись информации в блок памяти
+
+	@param	[in] ptr		адресс блока
+	@param	[in] pBuffer	адресс буфера куда копируется инфомация
+	@param	[in] szBuffer	размер буфера
+
+	@return	код ошибки
+	@retval	0	успешное выполнение
+	@retval	-1	неверные параметры
+	@retval	-2	доступ за пределы блока
+	@retval	1	неизвестная ошибка
+ **/
+int _write(VA ptr, void* pBuffer, size_t szBuffer) {
+
+}
+
+
+
+/**
+	@func	_init
+	@brief	Инициализация модели менеджера памяти
+
+	@param	[in] n		количество страниц
+	@param	[in] szPage	размер страницы
+
+	В варианте 1 и 2 общий объем памяти расчитывается как n*szPage
+
+	@return	код ошибки
+	@retval	0	успешное выполнение
+	@retval	-1	неверные параметры
+	@retval	1	неизвестная ошибка
+ **/
+int _init(int n, int szPage) {
+
 }

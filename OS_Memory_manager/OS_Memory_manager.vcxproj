@@ -154,9 +154,13 @@
   <ItemGroup>
     <ClCompile Include="mmemory.c" />
     <ClCompile Include="OS_Memory_manager.c" />
+    <ClCompile Include="segment_table.c" />
+    <ClCompile Include="adress_spaces.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mmemory.h" />
+    <ClInclude Include="segment_table.h" />
+    <ClInclude Include="adress_spaces.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
