@@ -61,7 +61,7 @@ void _print_vas ()
 
 	for (unsigned int adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
-		printf("%d\t%p", adress_index, _vas[adress_index] ? _vas[adress_index] : "NULL");
+		printf("%d\t%p", adress_index, _vas[adress_index]);
 		printf("\n");
 	}
 }
@@ -73,7 +73,7 @@ void _print_pas ()
 
 	for (unsigned int adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
-		printf("%d\t%p", adress_index, _pas[adress_index] ? _pas[adress_index] : "NULL");
+		printf("%d\t%p", adress_index, _pas[adress_index]);
 		printf("\n");
 	}
 }

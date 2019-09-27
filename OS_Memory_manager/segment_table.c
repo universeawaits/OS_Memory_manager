@@ -11,16 +11,6 @@ void _init_segment_table ()
 {
 	_segment_table.current_records_count = 0;
 	_segment_table.first_free_index = 0;
-
-	segment_table_record example_record;
-	example_record.is_loaded = false;
-	example_record.pa = NULL;
-	example_record.segment_ptr = NULL;
-
-	for (unsigned int record_index = 0; record_index < ST_MAX_RECORDS_COUNT; record_index++)
-	{
-		_segment_table.records[record_index] = example_record;
-	}
 }
 
 void _print_segment_table()
