@@ -1,15 +1,14 @@
-/************************************************************************
-		Лабораторная работа №1
+#include "mmemory.h"
+#include "segment_table.h"
+#include "adress_spaces.h"
 
-	Описание интерфейсных функций модели менеджера памяти
+#include <stdlib.h>
+#include <stdbool.h>
 
- ************************************************************************/
-
-#include <stddef.h>
-
-typedef char* VA;				// Тип описывающий адрес блока 
-
-
+#define _SUCCESS 0
+#define _WRONG_PARAMS -1
+#define _MEMORY_LACK -2
+#define _UNKNOWN_ERR 1
 
 /**
 	@func	_malloc
@@ -24,7 +23,16 @@ typedef char* VA;				// Тип описывающий адрес блока
 	@retval	-2	нехватка памяти
 	@retval	1	неизвестная ошибка
  **/
-int _malloc(VA* ptr, size_t szBlock);
+int _malloc (VA* ptr, size_t szBlock) {
+	if (*ptr == NULL)
+	{
+		return _WRONG_PARAMS;
+	}
+
+
+
+	return _SUCCESS;
+}
 
 
 
@@ -39,7 +47,15 @@ int _malloc(VA* ptr, size_t szBlock);
 	@retval	-1	неверные параметры
 	@retval	1	неизвестная ошибка
  **/
-int _free(VA ptr);
+int _free(VA ptr) {
+	if (_find_segment(ptr) != NULL) {
+		
+
+		return _SUCCESS;
+	}
+
+	return _WRONG_PARAMS;
+}
 
 
 
@@ -52,12 +68,14 @@ int _free(VA ptr);
 	@param	[in] szBuffer	размер буфера
 
 	@return	код ошибки
-	@retval	0	успешное выполнение 
+	@retval	0	успешное выполнение
 	@retval	-1	неверные параметры
 	@retval	-2	доступ за пределы блока
 	@retval	1	неизвестная ошибка
  **/
-int _read(VA ptr, void* pBuffer, size_t szBuffer);
+int _read(VA ptr, void* pBuffer, size_t szBuffer) {
+
+}
 
 
 
@@ -75,7 +93,9 @@ int _read(VA ptr, void* pBuffer, size_t szBuffer);
 	@retval	-2	доступ за пределы блока
 	@retval	1	неизвестная ошибка
  **/
-int _write(VA ptr, void* pBuffer, size_t szBuffer);
+int _write(VA ptr, void* pBuffer, size_t szBuffer) {
+
+}
 
 
 
@@ -93,4 +113,18 @@ int _write(VA ptr, void* pBuffer, size_t szBuffer);
 	@retval	-1	неверные параметры
 	@retval	1	неизвестная ошибка
  **/
-int _init(int n, int szPage);
+int _init(int n, int szPage) {
+	if (_init_pas(n * szPage) == NULL)
+	{
+		return _WRONG_PARAMS;
+	}
+
+	if (_init_vas(n * szPage) == NULL)
+	{
+		return _WRONG_PARAMS;
+	}
+
+	_init_segment_table();
+
+	return _SUCCESS;
+}

@@ -18,9 +18,24 @@
     <ClCompile Include="OS_Memory_manager.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="mmemory.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="segment_table.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="adress_spaces.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mmemory.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="segment_table.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="adress_spaces.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
