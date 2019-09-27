@@ -7,6 +7,11 @@
 
 #include <stddef.h>
 
+#define _SUCCESS 0
+#define _WRONG_PARAMS -1
+#define _MEMORY_LACK -2
+#define _UNKNOWN_ERR 1
+
 typedef char* VA;				// Тип описывающий адрес блока 
 
 

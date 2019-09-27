@@ -2,50 +2,26 @@
 
 #include <stdio.h>
 
-VA _init_vas (size_t size)
+int _init_vas (size_t size)
 {
 	if (size > VAS_MAX_SIZE) {
-		return NULL;
+		return _WRONG_PARAMS;
 	}
 	_vas_size = size;
 	_first_free_va_index = 0;
 
-	VA va = "hahahaahahah";
-
-	for (unsigned int adress_index = 0; adress_index < size; adress_index++) 
-	{
-		_vas[adress_index] = va;
-	}
-
-	for (unsigned int adress_index = size; adress_index < VAS_MAX_SIZE; adress_index++)
-	{
-		_vas[adress_index] = NULL;
-	}
-
-	return _vas[_first_free_va_index];
+	return _SUCCESS;
 }
 
-PA _init_pas (size_t size) 
+int _init_pas (size_t size) 
 {
 	if (size > PAS_MAX_SIZE) {
-		return NULL;
+		return _WRONG_PARAMS;
 	}
 	_pas_size = size;
 	_first_free_pa_index = 0;
 
-	PA pa = "dsffs";
-
-	for (unsigned int adress_index = 0; adress_index < size; adress_index++)
-	{
-		_pas[adress_index] = pa;
-	}
-
-	for (unsigned int adress_index = size; adress_index < PAS_MAX_SIZE; adress_index++)
-	{
-		_pas[adress_index] = NULL;
-	}
-
-	return _pas[_first_free_pa_index];
+	return _SUCCESS;
 }
 
 VA _allocate_segment (size_t size)
@@ -85,7 +61,7 @@ void _print_vas ()
 
 	for (unsigned int adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
-		printf("%d\t%p", adress_index, _vas[adress_index]);
+		printf("%d\t%p", adress_index, _vas[adress_index] ? _vas[adress_index] : "NULL");
 		printf("\n");
 	}
 }
@@ -97,7 +73,7 @@ void _print_pas ()
 
 	for (unsigned int adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
-		printf("%d\t%p", adress_index, _pas[adress_index]);
+		printf("%d\t%p", adress_index, _pas[adress_index] ? _pas[adress_index] : "NULL");
 		printf("\n");
 	}
 }

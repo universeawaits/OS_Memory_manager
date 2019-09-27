@@ -24,8 +24,8 @@ size_t _vas_size;
 int _first_free_va_index;
 int _first_free_pa_index;
 
-VA		_init_vas (size_t size);
-PA		_init_pas (size_t size);
+int		_init_vas (size_t size);
+int		_init_pas (size_t size);
 VA		_allocate_segment (size_t size);
 void	_defragment_vas ();
 
