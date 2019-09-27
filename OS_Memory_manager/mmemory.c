@@ -1,16 +1,14 @@
-#include <stdlib.h>
-#include <stdbool.h>
 #include "mmemory.h"
 #include "segment_table.h"
 #include "adress_spaces.h"
 
-/*
-	va	- virtual adress
-	vas - virtual adress space
+#include <stdlib.h>
+#include <stdbool.h>
 
-	pa	- physical adress
-	p	- physical
-*/
+#define _SUCCESS 0
+#define _WRONG_PARAMS -1
+#define _MEMORY_LACK -2
+#define _UNKNOWN_ERR 1
 
 /**
 	@func	_malloc
@@ -26,7 +24,14 @@
 	@retval	1	неизвестная ошибка
  **/
 int _malloc (VA* ptr, size_t szBlock) {
+	if (*ptr == NULL)
+	{
+		return _WRONG_PARAMS;
+	}
 
+
+
+	return _SUCCESS;
 }
 
 
@@ -43,7 +48,13 @@ int _malloc (VA* ptr, size_t szBlock) {
 	@retval	1	неизвестная ошибка
  **/
 int _free(VA ptr) {
+	if (_find_segment(ptr) != NULL) {
+		
 
+		return _SUCCESS;
+	}
+
+	return _WRONG_PARAMS;
 }
 
 
@@ -103,5 +114,17 @@ int _write(VA ptr, void* pBuffer, size_t szBuffer) {
 	@retval	1	неизвестная ошибка
  **/
 int _init(int n, int szPage) {
+	if (_init_pas(n * szPage) == NULL)
+	{
+		return _WRONG_PARAMS;
+	}
 
+	if (_init_vas(n * szPage) == NULL)
+	{
+		return _WRONG_PARAMS;
+	}
+
+	_init_segment_table();
+
+	return _SUCCESS;
 }
