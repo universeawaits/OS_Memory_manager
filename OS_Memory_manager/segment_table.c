@@ -13,7 +13,7 @@ void _init_segment_table ()
 	_segment_table.first_free_index = 0;
 }
 
-void _print_segment_table()
+void _print_segment_table ()
 {
 	printf("Index\tSegment VA\tSegment PA\tIs loaded\n");
 

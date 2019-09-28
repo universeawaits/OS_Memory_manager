@@ -16,24 +16,30 @@
 #define _ST_MAX_RECORDS_COUNT (_VAS_MAX_SIZE / sizeof(segment_table_record))
 
 // Тип, описывающий сегмент памяти
-typedef struct {
+typedef struct
+{
 	VA		starting_va;
 	size_t	size;
-} segment;
+} 
+segment;
 
 // Тип, описывающий запись в таблице сегментов
-typedef struct {
+typedef struct
+{
 	segment*	segment_ptr;
 	PA			pa;
 	bool		is_loaded;
-} segment_table_record;
+}
+segment_table_record;
 
 // Тип, описывающий таблицу сегментов
-typedef struct {
+typedef struct
+{
 	size_t					current_records_count;
 	unsigned int			first_free_index;
 	segment_table_record	records[_ST_MAX_RECORDS_COUNT];
-} segment_table;
+} 
+segment_table;
 
 void					_init_segment_table ();
 segment_table_record*	_add_record_to_segment_table (segment* segment);

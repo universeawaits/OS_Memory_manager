@@ -14,6 +14,13 @@ int main ()
 	}
 	else
 	{
-		printf("Error");
+		printf("Error initializing memory\n");
+	}
+
+	VA first_segment_exapmle = NULL;
+	size_t segment_size = 10;
+	if (_malloc(&first_segment_exapmle, segment_size) == _SUCCESS)
+	{
+		printf("First example segment starting VA: %p", first_segment_exapmle);
 	}
 }
