@@ -25,7 +25,6 @@ int _init_pas(size_t size)
 
 	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
-		pas_content[adress_index] = NULL;
 		_pas[adress_index] = pas_content + adress_index;
 	}
 	_first_free_pa = _pas[0];
@@ -56,7 +55,6 @@ int _init_vas (size_t size)
 
 	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
-		vas_content[adress_index] = NULL;
 		_vas[adress_index] = vas_content + adress_index;
 	}
 	_first_free_va = _vas[0];
@@ -65,7 +63,7 @@ int _init_vas (size_t size)
 	return _SUCCESS;
 }
 
-unsigned int _validate_pa (PA va)
+uint _validate_pa (PA va)
 {
 	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
@@ -77,7 +75,7 @@ unsigned int _validate_pa (PA va)
 	return NULL;
 }
 
-unsigned int _validate_va (VA va)
+uint _validate_va (VA va)
 {
 	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
@@ -101,7 +99,7 @@ void _print_vas ()
 
 	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
-		printf("%d\t%p\t\t%c\n", adress_index, _vas[adress_index], *_vas[adress_index]);
+		printf("%d\t%p\t%c\n", adress_index, _vas[adress_index], *_vas[adress_index]);
 	}
 }
 

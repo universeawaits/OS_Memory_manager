@@ -18,11 +18,23 @@ int _malloc (VA* ptr, size_t szBlock)
 		}
 	}
 	*ptr = _first_free_va;
+	_first_free_va += szBlock;
+
+	segment* new_segment = (segment*)malloc(sizeof(segment));
+	
+	if (new_segment == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+	new_segment->size = szBlock;
+	new_segment->starting_va = *ptr;
+
+	_add_record_to_segment_table(new_segment);
 
 	return _SUCCESS;
 }
 
-int _free(VA ptr) 
+int _free (VA ptr) 
 {
 	if (ptr == NULL || _validate_va(ptr) == NULL || _find_segment(ptr))
 	{
@@ -59,7 +71,10 @@ int _init(int n, int szPage)
 		return init_vas_return_code;
 	}
 
-	_init_segment_table();
+	int init_st_return_code = _init_segment_table();
+	if (init_st_return_code != _SUCCESS) {
+		return init_st_return_code;
+	}
 
 	return _SUCCESS;
 }

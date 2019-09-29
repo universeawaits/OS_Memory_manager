@@ -7,6 +7,7 @@
 //	p	- физический
 //	pa	- физический адрес
 //	pas - физическое адресное пространство
+//	st	- таблица сегментов
 //	///////////////////////////////////////
 
 #ifndef ADRESS_SPACES_H
@@ -42,8 +43,8 @@ VA			_last_free_va;
 
 int				_init_pas(size_t size);
 int				_init_vas(size_t size);
-unsigned int	_validate_pa(PA va);
-unsigned int	_validate_va(VA va);
+uint			_validate_pa(PA va);
+uint			_validate_va(VA va);
 segment*		_find_segment(VA starting_va);
 void			_defragment_vas();
 
