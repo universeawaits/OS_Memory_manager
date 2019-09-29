@@ -3,6 +3,7 @@
 #include "adress_spaces.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 int main ()
 {
@@ -23,4 +24,13 @@ int main ()
 	{
 		printf("First example segment starting VA: %p", first_segment_exapmle);
 	}
+
+	/*VA* vas = (VA*)malloc(sizeof(VA) * 10);
+	VA vas_content = (VA)malloc(10);
+
+	for (int i = 0; i < 10; i++) {
+		vas_content[i] = 's';
+		vas[i] = vas_content[i];
+		printf("vas: %p; vas_content: %p, char: %c\n", vas[i], vas_content + i, vas_content[i]);
+	}*/
 }

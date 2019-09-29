@@ -14,8 +14,10 @@
 
 // Тип, описывающий физический адрес
 typedef char* PA;
+// Сокращение для unsigned int (не size_t!)
+typedef unsigned int uint;
 
-// Тип, описывающий сегмент памяти // НУЖНО ВЫНЕСТИ В adress_spaces.h
+// Тип, описывающий сегмент памяти
 typedef struct
 {
 	VA		starting_va;
@@ -26,8 +28,8 @@ segment;
 #define _PAS_MAX_SIZE 1024				// Максимальный размер физического адресного пространства (в байтах)
 #define _VAS_MAX_SIZE _PAS_MAX_SIZE		// Максимальный размер виртуального адресного пространства (в байтах)
 
-PA* _pas;						// Физическое адресное пространство
-VA* _vas;						// Виртуальное адресное пространство
+PA*			_pas;						// Физическое адресное пространство
+VA*			_vas;						// Виртуальное адресное пространство
 
 size_t		_pas_size;					// Текущий размер физического адресного пространства
 size_t		_vas_size;					// Текущий размер виртуального адресного пространства
@@ -38,15 +40,15 @@ VA			_first_free_va;
 PA			_last_free_pa;
 VA			_last_free_va;
 
-int			_init_pas(size_t size);
-int			_init_vas(size_t size);
-PA			_validate_pa(PA va);
-VA			_validate_va(VA va);
-segment* _find_segment(VA starting_va);
-void		_defragment_vas();
+int				_init_pas(size_t size);
+int				_init_vas(size_t size);
+unsigned int	_validate_pa(PA va);
+unsigned int	_validate_va(VA va);
+segment*		_find_segment(VA starting_va);
+void			_defragment_vas();
 
-void		_print_vas();
-void		_print_pas();
+void			_print_vas();
+void			_print_pas();
 
 
 #endif // !ADRESS_SPACES_H

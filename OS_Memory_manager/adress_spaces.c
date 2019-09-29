@@ -16,12 +16,17 @@ int _init_pas(size_t size)
 		return _UNKNOWN_ERR;
 	}
 	_pas_size = size;
+	VA pas_content = (PA)malloc(sizeof(char) * size);
 
-	for (unsigned int adress_index = 0; adress_index < _pas_size; adress_index++)
+	if (pas_content == NULL)
 	{
-		_pas[adress_index] = (PA)malloc(sizeof(PA));
+		return _UNKNOWN_ERR;
 	}
 
+	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
+	{
+		_pas[adress_index] = pas_content + adress_index;
+	}
 	_first_free_pa = _pas[0];
 	_last_free_pa = _pas[_pas_size - 1];
 
@@ -41,42 +46,46 @@ int _init_vas (size_t size)
 		return _UNKNOWN_ERR;
 	}
 	_vas_size = size;
+	VA vas_content = (VA)malloc(sizeof(char) * size);
 
-	for (unsigned int adress_index = 0; adress_index < _vas_size; adress_index++)
+	if (vas_content == NULL)
 	{
-		_vas[adress_index] = (VA)malloc(sizeof(VA));
+		return _UNKNOWN_ERR;
+	}
+
+	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
+	{
+		_vas[adress_index] = vas_content + adress_index;
 	}
 	_first_free_va = _vas[0];
-	_last_free_va = _pas[_vas_size - 1];
+	_last_free_va = _vas[_vas_size - 1];
 
 	return _SUCCESS;
 }
 
-PA _validate_pa (PA va)
+unsigned int _validate_pa (PA va)
 {
-	for (unsigned int adress_index = 0; adress_index < _pas_size; adress_index++)
+	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
 		if (_pas[adress_index] == va) {
-			return _pas[adress_index];
+			return adress_index;
 		}
 	}
 	
 	return NULL;
 }
 
-VA _validate_va (VA va)
+unsigned int _validate_va (VA va)
 {
-	for (unsigned int adress_index = 0; adress_index < _vas_size; adress_index++)
+	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
 		if (_vas[adress_index] == va) {
-			return _vas[adress_index];
+			return adress_index;
 		}
 	}
 
 	return NULL;
 }
-
-
 
 void _defragment_vas ()
 {
@@ -88,7 +97,7 @@ void _print_vas ()
 	printf("Virtual adress space\n");
 	printf("Index\tAdress\n");
 
-	for (unsigned int adress_index = 0; adress_index < _vas_size; adress_index++)
+	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
 		printf("%d\t%p", adress_index, _vas[adress_index]);
 		printf("\n");
@@ -100,7 +109,7 @@ void _print_pas ()
 	printf("Physical adress space\n");
 	printf("Index\tAdress\n");
 
-	for (unsigned int adress_index = 0; adress_index < _pas_size; adress_index++)
+	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
 		printf("%d\t%p", adress_index, _pas[adress_index]);
 		printf("\n");
