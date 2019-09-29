@@ -16,19 +16,13 @@ int _init_pas(size_t size)
 		return _UNKNOWN_ERR;
 	}
 	_pas_size = size;
-	VA pas_content = (PA)malloc(sizeof(char) * size);
-
-	if (pas_content == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
 
 	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
-		_pas[adress_index] = pas_content + adress_index;
+		_pas[adress_index] = NULL;
 	}
-	_first_free_pa = _pas[0];
-	_last_free_pa = _pas[_pas_size - 1];
+	_first_free_pa = _pas;
+	_last_free_pa = _pas + _pas_size - 1;
 
 	return _SUCCESS;
 }
@@ -46,19 +40,13 @@ int _init_vas (size_t size)
 		return _UNKNOWN_ERR;
 	}
 	_vas_size = size;
-	VA vas_content = (VA)malloc(sizeof(char) * size);
-
-	if (vas_content == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
 
 	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
-		_vas[adress_index] = vas_content + adress_index;
+		_vas[adress_index] = NULL;
 	}
-	_first_free_va = _vas[0];
-	_last_free_va = _vas[_vas_size - 1];
+	_first_free_va = _vas;
+	_last_free_va = _vas + _vas_size - 1;
 
 	return _SUCCESS;
 }
@@ -72,7 +60,7 @@ uint _validate_pa (PA va)
 		}
 	}
 	
-	return NULL;
+	return _FORBIDDEN_ADRESS;
 }
 
 uint _validate_va (VA va)
@@ -84,7 +72,7 @@ uint _validate_va (VA va)
 		}
 	}
 
-	return NULL;
+	return _FORBIDDEN_ADRESS;
 }
 
 void _defragment_vas ()
@@ -95,11 +83,11 @@ void _defragment_vas ()
 void _print_vas ()
 {
 	printf("Virtual adress space\n");
-	printf("Index\tAdress\t\tContent\n");
+	printf("Index\tAdress\t\n");
 
 	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
-		printf("%d\t%p\t%c\n", adress_index, _vas[adress_index], *_vas[adress_index]);
+		printf("%d\t%p\n", adress_index, *(_vas + adress_index));
 	}
 }
 
@@ -110,6 +98,6 @@ void _print_pas ()
 
 	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
-		printf("%d\t%p\t%c\n", adress_index, _pas[adress_index], *_vas[adress_index]);
+		printf("%d\t%p\n", adress_index, _pas[adress_index]);
 	}
 }

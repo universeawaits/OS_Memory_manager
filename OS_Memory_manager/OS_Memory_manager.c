@@ -7,21 +7,20 @@
 
 int main ()
 {
-	if (_init(10, 100) == _SUCCESS)
-	{
-		_print_pas();
-		_print_vas();
-		_print_segment_table();
-	}
-	else
+	if (!_init(10, 100) == _SUCCESS)
 	{
 		printf("Error initializing memory\n");
+		return;
 	}
 
 	VA first_segment_exapmle = NULL;
 	size_t segment_size = 10;
 	if (_malloc(&first_segment_exapmle, segment_size) == _SUCCESS)
 	{
-		printf("First example segment starting VA: %p", first_segment_exapmle);
+		printf("First example segment starting VA: %p\n", first_segment_exapmle);
 	}
+
+	_print_vas();
+
+	return 0;
 }

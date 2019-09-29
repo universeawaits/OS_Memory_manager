@@ -161,6 +161,7 @@
     <ClInclude Include="mmemory.h" />
     <ClInclude Include="segment_table.h" />
     <ClInclude Include="adress_spaces.h" />
+    <ClInclude Include="unit_test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

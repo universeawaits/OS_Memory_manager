@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdlib.h> 
+#include <string.h> 
 
 int _malloc (VA* ptr, size_t szBlock)
 {
@@ -17,26 +17,48 @@ int _malloc (VA* ptr, size_t szBlock)
 			return _MEMORY_LACK;
 		}
 	}
-	*ptr = _first_free_va;
-	_first_free_va += szBlock;
 
 	segment* new_segment = (segment*)malloc(sizeof(segment));
-	
 	if (new_segment == NULL)
 	{
 		return _UNKNOWN_ERR;
 	}
-	new_segment->size = szBlock;
-	new_segment->starting_va = *ptr;
 
-	_add_record_to_segment_table(new_segment);
+	*_first_free_va = (VA)malloc(sizeof(VA) * szBlock);
+	if (*_first_free_va == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	new_segment->size = szBlock;
+	new_segment->starting_va = *_first_free_va;
+
+	int add_rec_return_code = _add_record_to_segment_table(new_segment);
+	if (add_rec_return_code != _SUCCESS)
+	{
+		return add_rec_return_code;
+	}
+
+	VA segment_space = (VA)malloc(sizeof(char) * szBlock);
+
+	uint curr_adress_offset = 0;
+	while (curr_adress_offset < szBlock)
+	{
+		*(_first_free_va + curr_adress_offset) = segment_space + curr_adress_offset;
+		curr_adress_offset++;
+	}
+
+	*ptr = *_first_free_va;
+	_first_free_va += szBlock;
 
 	return _SUCCESS;
 }
 
 int _free (VA ptr) 
 {
-	if (ptr == NULL || _validate_va(ptr) == NULL || _find_segment(ptr))
+	if (ptr == NULL ||
+		_validate_va(ptr) == _FORBIDDEN_ADRESS ||
+		_find_segment(ptr) == NULL)
 	{
 		return _WRONG_PARAMS;
 	}
