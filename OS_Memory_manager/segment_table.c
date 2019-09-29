@@ -16,7 +16,7 @@ void _print_segment_table ()
 {
 	printf("Index\tSegment VA\tSegment PA\tIs loaded\n");
 
-	for (int record_index = 0; record_index < _ST_MAX_RECORDS_COUNT; record_index++)
+	for (uint record_index = 0; record_index < _ST_MAX_RECORDS_COUNT; record_index++)
 	{
 		if (&_segment_table.records[record_index] == NULL)
 		{

@@ -47,14 +47,16 @@ int _write(VA ptr, void* pBuffer, size_t szBuffer)
 
 int _init(int n, int szPage) 
 {
-	if (_init_pas(n * szPage) == _WRONG_PARAMS)
+	int init_pas_return_code = _init_pas(n * szPage);
+	if (init_pas_return_code != _SUCCESS)
 	{
-		return _WRONG_PARAMS;
+		return init_pas_return_code;
 	}
 
-	if (_init_vas(n * szPage) == _WRONG_PARAMS)
+	int init_vas_return_code = _init_vas(n * szPage);
+	if (init_vas_return_code != _SUCCESS)
 	{
-		return _WRONG_PARAMS;
+		return init_vas_return_code;
 	}
 
 	_init_segment_table();
