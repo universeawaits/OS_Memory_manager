@@ -1,4 +1,3 @@
-#include "mmemory.h"
 #include "adress_spaces.h"
 
 #include <stdbool.h>
@@ -14,14 +13,6 @@
 
 // Максимальное количество записей в таблице сегментов
 #define _ST_MAX_RECORDS_COUNT (_VAS_MAX_SIZE / sizeof(segment_table_record))
-
-// Тип, описывающий сегмент памяти
-typedef struct
-{
-	VA		starting_va;
-	size_t	size;
-} 
-segment;
 
 // Тип, описывающий запись в таблице сегментов
 typedef struct

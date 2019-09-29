@@ -8,30 +8,23 @@
 
 int _malloc (VA* ptr, size_t szBlock)
 {
-	if (_first_free_va_index == _FORBIDDEN_ADRESS_INDEX ||
-		_first_free_va_index + szBlock >= _vas_size)
+	if (_first_free_va + szBlock > _last_free_va)
 	{
 		_defragment_vas();
 
-		if (_first_free_va_index == _FORBIDDEN_ADRESS_INDEX ||
-			_first_free_va_index + szBlock >= _vas_size)
+		if (_first_free_va + szBlock > _last_free_va)
 		{
 			return _MEMORY_LACK;
 		}
 	}
-
-	if (_first_free_va_index + szBlock >= _vas_size)
-	{
-		_first_free_va_index = _FORBIDDEN_ADRESS_INDEX;
-	}
-	*ptr = _vas[_first_free_va_index];
+	*ptr = _first_free_va;
 
 	return _SUCCESS;
 }
 
 int _free(VA ptr) 
 {
-	if (ptr == NULL || _validate_va(ptr) == NULL) 
+	if (ptr == NULL || _validate_va(ptr) == NULL || _find_segment(ptr))
 	{
 		return _WRONG_PARAMS;
 	}

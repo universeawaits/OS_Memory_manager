@@ -1,5 +1,4 @@
 #include "segment_table.h"
-#include "adress_spaces.h"
 
 #include <string.h>
 #include <stdio.h>
