@@ -1,103 +1,103 @@
 #include "adress_spaces.h" 
 
 #include <stdio.h>
+#include <stdlib.h>
 
-VA _init_vas (size_t size)
+int _init_pas(size_t size)
 {
-	if (size > VAS_MAX_SIZE) {
-		return NULL;
+	if (size > _PAS_MAX_SIZE || size < 0) {
+		return _WRONG_PARAMS;
 	}
-	_vas_size = size;
-	_first_free_va_index = 0;
 
-	VA va = "hahahaahahah";
+	_pas = (PA*)malloc(sizeof(PA) * size);
 
-	for (unsigned int adress_index = 0; adress_index < size; adress_index++) 
+	if (_pas == NULL)
 	{
-		_vas[adress_index] = va;
-	}
-
-	for (unsigned int adress_index = size; adress_index < VAS_MAX_SIZE; adress_index++)
-	{
-		_vas[adress_index] = NULL;
-	}
-
-	return _vas[_first_free_va_index];
-}
-
-PA _init_pas (size_t size) 
-{
-	if (size > PAS_MAX_SIZE) {
-		return NULL;
+		return _UNKNOWN_ERR;
 	}
 	_pas_size = size;
-	_first_free_pa_index = 0;
 
-	PA pa = "dsffs";
-
-	for (unsigned int adress_index = 0; adress_index < size; adress_index++)
-	{
-		_pas[adress_index] = pa;
-	}
-
-	for (unsigned int adress_index = size; adress_index < PAS_MAX_SIZE; adress_index++)
+	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
 		_pas[adress_index] = NULL;
 	}
+	_first_free_pa = _pas;
+	_last_free_pa = _pas + _pas_size - 1;
 
-	return _pas[_first_free_pa_index];
+	return _SUCCESS;
 }
 
-VA _allocate_segment (size_t size)
+int _init_vas (size_t size)
 {
-	if (_first_free_va_index == NULL_MEMORY_INDEX || 
-		_first_free_va_index + size >= VAS_MAX_SIZE)
-	{
-		_defragment_vas();
+	if (size > _VAS_MAX_SIZE || size < 0) {
+		return _WRONG_PARAMS;
+	}
+	
+	_vas = (VA*)malloc(sizeof(VA) * size);
 
-		if (_first_free_va_index == NULL_MEMORY_INDEX ||
-			_first_free_va_index + size >= VAS_MAX_SIZE)
-		{
-			return NULL;
+	if (_vas == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+	_vas_size = size;
+
+	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
+	{
+		_vas[adress_index] = NULL;
+	}
+	_first_free_va = _vas;
+	_last_free_va = _vas + _vas_size - 1;
+
+	return _SUCCESS;
+}
+
+uint _validate_pa (PA va)
+{
+	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
+	{
+		if (_pas[adress_index] == va) {
+			return adress_index;
+		}
+	}
+	
+	return _FORBIDDEN_ADRESS;
+}
+
+uint _validate_va (VA va)
+{
+	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
+	{
+		if (_vas[adress_index] == va) {
+			return adress_index;
 		}
 	}
 
-	VA starting_va = _vas[_first_free_va_index]; 
-	_first_free_va_index += size;
-	
-	if (_first_free_va_index + size >= VAS_MAX_SIZE) 
-	{
-		_first_free_va_index = NULL_MEMORY_INDEX;
-	}
-
-	return starting_va;
+	return _FORBIDDEN_ADRESS;
 }
 
 void _defragment_vas ()
 {
-
+	// do smth with _first_free_va
 }
 
 void _print_vas ()
 {
 	printf("Virtual adress space\n");
-	printf("Index\tAdress\n");
+	printf("Index\tAdress\t\n");
 
-	for (unsigned int adress_index = 0; adress_index < _vas_size; adress_index++)
+	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
-		printf("%d\t%p", adress_index, _vas[adress_index]);
-		printf("\n");
+		printf("%d\t%p\n", adress_index, *(_vas + adress_index));
 	}
 }
 
 void _print_pas ()
 {
 	printf("Physical adress space\n");
-	printf("Index\tAdress\n");
+	printf("Index\tAdress\t\tContent\n");
 
-	for (unsigned int adress_index = 0; adress_index < _pas_size; adress_index++)
+	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
-		printf("%d\t%p", adress_index, _pas[adress_index]);
-		printf("\n");
+		printf("%d\t%p\n", adress_index, _pas[adress_index]);
 	}
 }

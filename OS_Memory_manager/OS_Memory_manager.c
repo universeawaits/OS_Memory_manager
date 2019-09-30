@@ -1,24 +1,20 @@
 ﻿#include "mmemory.h"
-#include "segment_table.h"
 #include "adress_spaces.h"
+#include "segment_table.h"
+#include "unit_test.h"
 
 #include <stdio.h>
-
-#define _SUCCESS 0
-#define _WRONG_PARAMS -1
-#define _MEMORY_LACK -2
-#define _UNKNOWN_ERR 1
+#include <stdlib.h>
 
 int main ()
 {
-	if (_init(10, 100) == _SUCCESS)
-	{
-		_print_pas();
-		_print_vas();
-		_print_segment_table();
-	}
-	else
-	{
-		printf("Error");
-	}
+	size_t szPage = 100;
+	uint n = 10;
+	test_init(n, szPage);
+
+	VA segment_starting_va_ptr = NULL;
+	size_t size = 12;
+	test_malloc(&segment_starting_va_ptr, size);
+
+	return 0;
 }

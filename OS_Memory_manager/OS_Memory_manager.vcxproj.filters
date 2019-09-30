@@ -27,6 +27,9 @@
     <ClCompile Include="adress_spaces.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="unit_test.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mmemory.h">
@@ -36,6 +39,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="adress_spaces.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="unit_test.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

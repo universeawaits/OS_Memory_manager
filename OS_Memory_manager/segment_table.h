@@ -1,4 +1,3 @@
-#include "mmemory.h"
 #include "adress_spaces.h"
 
 #include <stdbool.h>
@@ -13,32 +12,31 @@
 //	///////////////////////////////////////
 
 // Максимальное количество записей в таблице сегментов
-#define ST_MAX_RECORDS_COUNT (VAS_MAX_SIZE / sizeof(segment_table_record))
-
-// Тип, описывающий сегмент памяти
-typedef struct {
-	VA		starting_va;
-	size_t	size;
-} segment;
+#define _ST_MAX_RECORDS_COUNT (_VAS_MAX_SIZE / sizeof(segment))
 
 // Тип, описывающий запись в таблице сегментов
-typedef struct {
+typedef struct
+{
 	segment*	segment_ptr;
 	PA			pa;
 	bool		is_loaded;
-} segment_table_record;
+}
+st_record;
 
 // Тип, описывающий таблицу сегментов
-typedef struct {
-	size_t					current_records_count;
-	unsigned int			first_free_index;
-	segment_table_record	records[ST_MAX_RECORDS_COUNT];
-} segment_table;
+typedef struct
+{
+	size_t		current_records_count;
+	uint		first_free_index;
+	st_record*	records;
+}
+segment_table;
 
-void					_init_segment_table ();
-segment_table_record*	_add_record_to_segment_table (segment* segment);
-void					_remove_record_from_segment_table (unsigned int index);
-void					_clear_segment_table ();
-void					_clear_segment_table_record (unsigned int index);
-segment*				_find_segment (VA segment_starting_va);
-void					_print_segment_table ();
+int				_init_segment_table ();
+int				_add_record_to_segment_table (segment* segment);
+int				_remove_record_from_segment_table (uint index);
+void			_clear_segment_table ();
+void			_clear_segment_table_record (uint index);
+segment*		_find_segment (VA segment_starting_va);
+
+void			_print_segment_table ();

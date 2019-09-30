@@ -4,127 +4,99 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h> 
 
-#define _SUCCESS 0
-#define _WRONG_PARAMS -1
-#define _MEMORY_LACK -2
-#define _UNKNOWN_ERR 1
-
-/**
-	@func	_malloc
-	@brief	Выделяет блок памяти определенного размера
-
-	@param	[out] ptr		адресс блока
-	@param	[in]  szBlock	размер блока
-
-	@return	код ошибки
-	@retval	0	успешное выполнение
-	@retval	-1	неверные параметры
-	@retval	-2	нехватка памяти
-	@retval	1	неизвестная ошибка
- **/
-int _malloc (VA* ptr, size_t szBlock) {
-	if (*ptr == NULL)
+int _malloc (VA* ptr, size_t szBlock)
+{
+	if (_first_free_va + szBlock > _last_free_va)
 	{
-		return _WRONG_PARAMS;
+		_defragment_vas();
+
+		if (_first_free_va + szBlock > _last_free_va)
+		{
+			return _MEMORY_LACK;
+		}
 	}
 
+	segment* new_segment = (segment*)malloc(sizeof(segment));
+	if (new_segment == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
 
+	*_first_free_va = (VA)malloc(sizeof(VA) * szBlock);
+	if (*_first_free_va == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	new_segment->size = szBlock;
+	new_segment->starting_va = *_first_free_va;
+
+	int add_rec_return_code = _add_record_to_segment_table(new_segment);
+	if (add_rec_return_code != _SUCCESS)
+	{
+		return add_rec_return_code;
+	}
+
+	VA segment_space = (VA)malloc(sizeof(char) * szBlock);
+
+	uint curr_adress_offset = 0;
+	while (curr_adress_offset < szBlock)
+	{
+		*(_first_free_va + curr_adress_offset) = segment_space + curr_adress_offset;
+		curr_adress_offset++;
+	}
+
+	*ptr = *_first_free_va;
+	_first_free_va += szBlock;
 
 	return _SUCCESS;
 }
 
-
-
-/**
-	@func	_free
-	@brief	Удаление блока памяти
-
-	@param	[in] ptr		адресс блока
-
-	@return	код ошибки
-	@retval	0	успешное выполнение
-	@retval	-1	неверные параметры
-	@retval	1	неизвестная ошибка
- **/
-int _free(VA ptr) {
-	if (_find_segment(ptr) != NULL) {
-		
-
-		return _SUCCESS;
-	}
-
-	return _WRONG_PARAMS;
-}
-
-
-
-/**
-	@func	_read
-	@brief	Чтение информации из блока памяти
-
-	@param	[in] ptr		адресс блока
-	@param	[in] pBuffer	адресс буфера куда копируется инфомация
-	@param	[in] szBuffer	размер буфера
-
-	@return	код ошибки
-	@retval	0	успешное выполнение
-	@retval	-1	неверные параметры
-	@retval	-2	доступ за пределы блока
-	@retval	1	неизвестная ошибка
- **/
-int _read(VA ptr, void* pBuffer, size_t szBuffer) {
-
-}
-
-
-
-/**
-	@func	_write
-	@brief	Запись информации в блок памяти
-
-	@param	[in] ptr		адресс блока
-	@param	[in] pBuffer	адресс буфера куда копируется инфомация
-	@param	[in] szBuffer	размер буфера
-
-	@return	код ошибки
-	@retval	0	успешное выполнение
-	@retval	-1	неверные параметры
-	@retval	-2	доступ за пределы блока
-	@retval	1	неизвестная ошибка
- **/
-int _write(VA ptr, void* pBuffer, size_t szBuffer) {
-
-}
-
-
-
-/**
-	@func	_init
-	@brief	Инициализация модели менеджера памяти
-
-	@param	[in] n		количество страниц
-	@param	[in] szPage	размер страницы
-
-	В варианте 1 и 2 общий объем памяти расчитывается как n*szPage
-
-	@return	код ошибки
-	@retval	0	успешное выполнение
-	@retval	-1	неверные параметры
-	@retval	1	неизвестная ошибка
- **/
-int _init(int n, int szPage) {
-	if (_init_pas(n * szPage) == NULL)
+int _free (VA ptr) 
+{
+	if (ptr == NULL ||
+		_validate_va(ptr) == _FORBIDDEN_ADRESS ||
+		_find_segment(ptr) == NULL)
 	{
 		return _WRONG_PARAMS;
 	}
 
-	if (_init_vas(n * szPage) == NULL)
+	ptr = NULL;
+	return _SUCCESS;
+}
+
+int _read(VA ptr, void* pBuffer, size_t szBuffer) 
+{
+
+	return _SUCCESS;
+}
+
+int _write(VA ptr, void* pBuffer, size_t szBuffer) 
+{
+
+	return _SUCCESS;
+}
+
+int _init(int n, int szPage) 
+{
+	int init_pas_return_code = _init_pas(n * szPage);
+	if (init_pas_return_code != _SUCCESS)
 	{
-		return _WRONG_PARAMS;
+		return init_pas_return_code;
 	}
 
-	_init_segment_table();
+	int init_vas_return_code = _init_vas(n * szPage);
+	if (init_vas_return_code != _SUCCESS)
+	{
+		return init_vas_return_code;
+	}
+
+	int init_st_return_code = _init_segment_table();
+	if (init_st_return_code != _SUCCESS) {
+		return init_st_return_code;
+	}
 
 	return _SUCCESS;
 }

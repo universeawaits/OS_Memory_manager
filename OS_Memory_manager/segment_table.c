@@ -1,105 +1,121 @@
 #include "segment_table.h"
-#include "adress_spaces.h"
 
 #include <string.h>
+#include <stdlib.h >
 #include <stdio.h>
 
-// Ёкземпл€р сегментной таблицы
-segment_table _segment_table;
+// —сылка на экземпл€р сегментной таблицы
+segment_table* _segment_table;
 
-void _init_segment_table ()  
+int _init_segment_table ()
 {
-	_segment_table.current_records_count = 0;
-	_segment_table.first_free_index = 0;
+	_segment_table = (segment_table*)malloc(sizeof(segment_table));
 
-	segment_table_record example_record;
-	example_record.is_loaded = false;
-	example_record.pa = NULL;
-	example_record.segment_ptr = NULL;
-
-	for (unsigned int record_index = 0; record_index < ST_MAX_RECORDS_COUNT; record_index++)
+	if (_segment_table == NULL)
 	{
-		_segment_table.records[record_index] = example_record;
+		return _UNKNOWN_ERR;
 	}
+	_segment_table->current_records_count = 0;
+	_segment_table->first_free_index = 0;
+	_segment_table->records = (st_record*)malloc(sizeof(st_record));
+
+	if (_segment_table->records == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	return _SUCCESS;
 }
 
-void _print_segment_table()
+void _print_segment_table ()
 {
 	printf("Index\tSegment VA\tSegment PA\tIs loaded\n");
 
-	for (int record_index = 0; record_index < ST_MAX_RECORDS_COUNT; record_index++)
+	for (uint record_index = 0; record_index < _ST_MAX_RECORDS_COUNT; record_index++)
 	{
-		if (&_segment_table.records[record_index] == NULL) {
-			printf("NULL");
+		if (_segment_table->records + record_index == NULL)
+		{
+			continue;
 		}
 		else 
 		{
 			printf	("%d\t%p\t%p\t%d",
 					record_index,
-					_segment_table.records[record_index].segment_ptr,
-					_segment_table.records[record_index].pa, 
-					_segment_table.records[record_index].is_loaded);
+					_segment_table->records[record_index].segment_ptr,
+					_segment_table->records[record_index].pa,
+					_segment_table->records[record_index].is_loaded
+					);
 		}
 
 		printf("\n");
 	}
 }
 
-segment_table_record* _add_record_to_segment_table (segment* segment) 
+int _add_record_to_segment_table (segment* segment)
 {
-	if (_segment_table.first_free_index >= ST_MAX_RECORDS_COUNT) {
-		return NULL;
+	if (_segment_table->first_free_index >= _ST_MAX_RECORDS_COUNT)
+	{
+		return _MEMORY_LACK;
 	}
 
-	segment_table_record* new_record_info = &_segment_table.records[_segment_table.first_free_index];
-	new_record_info->segment_ptr = segment;
-	new_record_info->pa = segment->starting_va; // TODO: преобразовать!!!
-	new_record_info->is_loaded = false;
+	st_record* new_record = (st_record*)malloc(sizeof(st_record));
+	
+	if (new_record == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+	new_record->segment_ptr = segment;
+	new_record->pa			= segment->starting_va; // TODO: преобразовать!!!
+	new_record->is_loaded	= false;
 
-	_segment_table.first_free_index++;
-	_segment_table.current_records_count++;
+	_segment_table->first_free_index++;
+	_segment_table->current_records_count++;
 
-	return &_segment_table.records[_segment_table.first_free_index - 1];
+	return _SUCCESS;
 }
 
-void _remove_record_from_segment_table (unsigned int index)
+int _remove_record_from_segment_table (uint index)
 {
-	if (index >= _segment_table.current_records_count
-		|| index < 0) 
+	if (index >= _ST_MAX_RECORDS_COUNT
+		|| index < 0)
 	{
-		return;
+		return _WRONG_PARAMS;
 	}
 
 	// TODO: что насчет first_free_index? нужно все сместить к началу массива
 
-	_segment_table.current_records_count--;
+	_segment_table->current_records_count--;
 
 	_clear_segment_table_record(index);
+
+	return _SUCCESS;
 }
 
-void _clear_segment_table () 
+void _clear_segment_table ()
 {
-	for (unsigned int record_index = 0; record_index < _segment_table.current_records_count; record_index++) {
+	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++) {
 		_clear_segment_table_record(record_index);
 	}
 }
 
-void _clear_segment_table_record (unsigned int index) 
+void _clear_segment_table_record (uint index)
 {
-	segment_table_record* record = &_segment_table.records[index];
+	st_record* record = _segment_table->records + index;
 
 	record->segment_ptr = NULL;
-	record->pa = NULL;
-	record->is_loaded = false;
+	record->pa			= NULL;
+	record->is_loaded	= false;
 
 	record = NULL;
 }
 
 segment* _find_segment (VA segment_starting_va)
 {
-	for (unsigned int record_index = 0; record_index < _segment_table.current_records_count; record_index++) {
-		if (_segment_table.records[record_index].segment_ptr->starting_va == segment_starting_va) {
-			return _segment_table.records[record_index].segment_ptr;
+	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++)
+	{
+		if (_segment_table->records[record_index].segment_ptr->starting_va == segment_starting_va)
+		{
+			return _segment_table->records[record_index].segment_ptr;
 		}
 	}
 

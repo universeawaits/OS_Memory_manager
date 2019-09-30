@@ -7,27 +7,51 @@
 //	p	- физический
 //	pa	- физический адрес
 //	pas - физическое адресное пространство
+//	st	- таблица сегментов
 //	///////////////////////////////////////
 
-typedef char* PA;					// Тип, описывающий физический адрес
+#ifndef ADRESS_SPACES_H
+#define ADRESS_SPACES_H
 
-#define PAS_MAX_SIZE 1024			// Максимальный размер физического адресного пространства (в байтах)
-#define VAS_MAX_SIZE PAS_MAX_SIZE	// Максимальный размер виртуального адресного пространства (в байтах)
-#define NULL_MEMORY_INDEX -1		// Индекс ячейки, которая находится вне памяти
+// Тип, описывающий физический адрес
+typedef char* PA;
+// Сокращение для unsigned int (не size_t!)
+typedef unsigned int uint;
 
-PA _pas[PAS_MAX_SIZE];				// Физическое адресное пространство
-VA _vas[VAS_MAX_SIZE];				// Виртуальное адресное пространство
+// Тип, описывающий сегмент памяти
+typedef struct
+{
+	VA		starting_va;
+	size_t	size;
+}
+segment;
 
-size_t _pas_size;
-size_t _vas_size;
+#define _PAS_MAX_SIZE 1024				// Максимальный размер физического адресного пространства (в байтах)
+#define _VAS_MAX_SIZE _PAS_MAX_SIZE		// Максимальный размер виртуального адресного пространства (в байтах)
+#define _FORBIDDEN_ADRESS -1			// Адрес вне выделенного адресного пространсва
 
-int _first_free_va_index;
-int _first_free_pa_index;
+PA*			_pas;						// Физическое адресное пространство
+VA*			_vas;						// Виртуальное адресное пространство
 
-VA		_init_vas (size_t size);
-PA		_init_pas (size_t size);
-VA		_allocate_segment (size_t size);
-void	_defragment_vas ();
+size_t		_pas_size;					// Текущий размер физического адресного пространства
+size_t		_vas_size;					// Текущий размер виртуального адресного пространства
 
-void _print_vas ();
-void _print_pas ();
+PA*			_first_free_pa;
+VA*			_first_free_va;
+
+PA*			_last_free_pa;
+VA*			_last_free_va;
+
+int				_init_pas(size_t size);
+int				_init_vas(size_t size);
+uint			_validate_pa(PA va);
+uint			_validate_va(VA va);
+segment*		_find_segment(VA starting_va);
+void			_defragment_vas();
+
+void			_print_vas();
+void			_print_pas();
+
+
+#endif // !ADRESS_SPACES_H
+
