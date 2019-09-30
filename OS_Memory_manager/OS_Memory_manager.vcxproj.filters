@@ -27,6 +27,9 @@
     <ClCompile Include="adress_spaces.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="unit_test.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mmemory.h">
