@@ -86,16 +86,18 @@ VA* _request_space (size_t size)
 	{
 
 	}
+
+	return NULL;
 }
 
 void _print_vas ()
 {
 	printf("Virtual adress space\n");
-	printf("Adress\Content\t\n");
+	printf("Adress\t\tContent\n");
 
 	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		printf("%p\t%c\n", _vas + adress_offset, _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
+		printf("%p\t\t%c\n", _vas + adress_offset, _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
 	}
 }
 
@@ -106,6 +108,6 @@ void _print_pas ()
 
 	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
 	{
-		printf("%p\t%c\n", _pas + adress_offset, _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
+		printf("%p\t\t%c\n", _pas + adress_offset, _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
 	}
 }

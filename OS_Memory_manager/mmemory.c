@@ -18,25 +18,10 @@ int _malloc (VA* ptr, size_t szBlock)
 		}
 	}
 
-	segment* new_segment = (segment*)malloc(sizeof(segment));
-	if (new_segment == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
-
 	*_first_free_va = (VA)malloc(sizeof(VA) * szBlock);
 	if (*_first_free_va == NULL)
 	{
 		return _UNKNOWN_ERR;
-	}
-
-	new_segment->size = szBlock;
-	new_segment->starting_va = *_first_free_va;
-
-	int add_rec_return_code = _add_record_to_segment_table(new_segment);
-	if (add_rec_return_code != _SUCCESS)
-	{
-		return add_rec_return_code;
 	}
 
 	VA segment_space = (VA)malloc(sizeof(char) * szBlock);
@@ -51,12 +36,29 @@ int _malloc (VA* ptr, size_t szBlock)
 	*ptr = *_first_free_va;
 	_first_free_va += szBlock;
 
+	segment* new_segment = (segment*)malloc(sizeof(segment));
+	if (new_segment == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	
+
+	new_segment->size = szBlock;
+	new_segment->starting_va = *ptr;
+
+	int add_rec_return_code = _add_record_to_segment_table(new_segment);
+	if (add_rec_return_code != _SUCCESS)
+	{
+		return add_rec_return_code;
+	}
+
 	return _SUCCESS;
 }
 
 int _free (VA ptr) 
 {
-	if (ptr == NULL || _validate_va(ptr) == _FORBIDDEN_ADRESS_OFFSET)
+	if (ptr == NULL)
 	{
 		return _WRONG_PARAMS;
 	}
@@ -67,19 +69,23 @@ int _free (VA ptr)
 		return _WRONG_PARAMS;
 	}
 
-	uint adress_offset = 0;
+	// Избыточно?
 	uint segment_starting_adress_offset = _validate_va(found_segment->starting_va);
 	if (segment_starting_adress_offset == _FORBIDDEN_ADRESS_OFFSET)
 	{
 		return _UNKNOWN_ERR;
 	}
 
+	uint adress_offset = 0;
 	while (adress_offset < found_segment->size)
 	{
 		*(_vas + segment_starting_adress_offset + adress_offset) = NULL;
 		adress_offset++;
 	}
 	//ptr = NULL;
+
+	_remove_record_from_segment_table(found_segment);
+
 	return _SUCCESS;
 }
 

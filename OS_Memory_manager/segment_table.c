@@ -75,19 +75,27 @@ int _add_record_to_segment_table (segment* segment)
 	return _SUCCESS;
 }
 
-int _remove_record_from_segment_table (uint index)
+int _remove_record_from_segment_table (segment* segment)
 {
-	if (index >= _ST_MAX_RECORDS_COUNT
-		|| index < 0)
+	if (segment == NULL)
 	{
 		return _WRONG_PARAMS;
+	}
+
+	uint found_rec_index = 0;
+	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++) {
+		if ((_segment_table->records + record_index)->segment_ptr == segment)
+		{
+			found_rec_index = record_index;
+			break;
+		}
 	}
 
 	// TODO: что насчет first_free_index? нужно все сместить к началу массива
 
 	_segment_table->current_records_count--;
 
-	_clear_segment_table_record(index);
+	_clear_segment_table_record(found_rec_index);
 
 	return _SUCCESS;
 }

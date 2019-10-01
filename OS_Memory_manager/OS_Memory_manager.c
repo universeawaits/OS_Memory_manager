@@ -19,7 +19,7 @@ int main ()
 	_print_vas();
 	_print_segment_table();
 
-	
+	test_free(segment_starting_va1);
 
 	_print_vas();
 	_print_segment_table();

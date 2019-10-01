@@ -35,7 +35,7 @@ segment_table;
 
 int				_init_segment_table ();
 int				_add_record_to_segment_table (segment* segment);
-int				_remove_record_from_segment_table (uint index);
+int				_remove_record_from_segment_table (segment* segment);
 void			_clear_segment_table ();
 void			_clear_segment_table_record (uint index);
 segment*		_find_segment (VA segment_starting_va);
