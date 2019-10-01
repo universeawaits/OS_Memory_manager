@@ -83,21 +83,21 @@ void _defragment_vas ()
 void _print_vas ()
 {
 	printf("Virtual adress space\n");
-	printf("Index\tAdress\t\n");
+	printf("Adress\Content\t\n");
 
-	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
+	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		printf("%d\t%p\n", adress_index, *(_vas + adress_index));
+		printf("%p\t%c\n", _vas + adress_offset, _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
 	}
 }
 
 void _print_pas ()
 {
 	printf("Physical adress space\n");
-	printf("Index\tAdress\t\tContent\n");
+	printf("Adress\t\tContent\n");
 
-	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
+	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
 	{
-		printf("%d\t%p\n", adress_index, _pas[adress_index]);
+		printf("%p\t%c\n", _pas + adress_offset, _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
 	}
 }

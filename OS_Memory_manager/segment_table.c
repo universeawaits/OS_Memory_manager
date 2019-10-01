@@ -17,11 +17,18 @@ int _init_segment_table ()
 	}
 	_segment_table->current_records_count = 0;
 	_segment_table->first_free_index = 0;
-	_segment_table->records = (st_record*)malloc(sizeof(st_record));
+	_segment_table->records = (st_record*)malloc(sizeof(st_record) * _ST_MAX_RECORDS_COUNT);
 
 	if (_segment_table->records == NULL)
 	{
 		return _UNKNOWN_ERR;
+	}
+
+	for (uint rec_index = 0; rec_index < _ST_MAX_RECORDS_COUNT; rec_index++)
+	{
+		_segment_table->records[rec_index].is_loaded = false;
+		_segment_table->records[rec_index].pa = NULL;
+		_segment_table->records[rec_index].segment_ptr = NULL;
 	}
 
 	return _SUCCESS;
@@ -58,15 +65,9 @@ int _add_record_to_segment_table (segment* segment)
 		return _MEMORY_LACK;
 	}
 
-	st_record* new_record = (st_record*)malloc(sizeof(st_record));
-	
-	if (new_record == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
-	new_record->segment_ptr = segment;
-	new_record->pa			= segment->starting_va; // TODO: преобразовать!!!
-	new_record->is_loaded	= false;
+	_segment_table->records[_segment_table->first_free_index].is_loaded = false;
+	_segment_table->records[_segment_table->first_free_index].pa = segment->starting_va; // TODO: преобразовать!!!
+	_segment_table->records[_segment_table->first_free_index].segment_ptr = segment;
 
 	_segment_table->first_free_index++;
 	_segment_table->current_records_count++;
