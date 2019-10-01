@@ -91,11 +91,15 @@ int _remove_record_from_segment_table (segment* segment)
 		}
 	}
 
-	// TODO: что насчет first_free_index? нужно все сместить к началу массива
-
-	_segment_table->current_records_count--;
-
 	_clear_segment_table_record(found_rec_index);
+
+	uint last_rec_index = _segment_table->current_records_count - 1;
+	_segment_table->records[found_rec_index] = _segment_table->records[last_rec_index];
+
+	_clear_segment_table_record(last_rec_index);
+
+	_segment_table->first_free_index--;
+	_segment_table->current_records_count--;
 
 	return _SUCCESS;
 }
@@ -114,8 +118,6 @@ void _clear_segment_table_record (uint index)
 	record->segment_ptr = NULL;
 	record->pa			= NULL;
 	record->is_loaded	= false;
-
-	record = NULL;
 }
 
 segment* _find_segment (VA segment_starting_va)

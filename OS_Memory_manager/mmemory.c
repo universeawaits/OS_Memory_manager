@@ -11,6 +11,7 @@ int _malloc (VA* ptr, size_t szBlock)
 	if (_first_free_va + szBlock > _last_free_va)
 	{
 		_defragment_vas();
+		_print_vas();
 
 		if (_first_free_va + szBlock > _last_free_va)
 		{
@@ -41,8 +42,6 @@ int _malloc (VA* ptr, size_t szBlock)
 	{
 		return _UNKNOWN_ERR;
 	}
-
-	
 
 	new_segment->size = szBlock;
 	new_segment->starting_va = *ptr;
