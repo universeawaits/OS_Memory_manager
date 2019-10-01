@@ -17,11 +17,18 @@ int _init_segment_table ()
 	}
 	_segment_table->current_records_count = 0;
 	_segment_table->first_free_index = 0;
-	_segment_table->records = (st_record*)malloc(sizeof(st_record));
+	_segment_table->records = (st_record*)malloc(sizeof(st_record) * _ST_MAX_RECORDS_COUNT);
 
 	if (_segment_table->records == NULL)
 	{
 		return _UNKNOWN_ERR;
+	}
+
+	for (uint rec_index = 0; rec_index < _ST_MAX_RECORDS_COUNT; rec_index++)
+	{
+		_segment_table->records[rec_index].is_loaded = false;
+		_segment_table->records[rec_index].pa = NULL;
+		_segment_table->records[rec_index].segment_ptr = NULL;
 	}
 
 	return _SUCCESS;
@@ -58,15 +65,9 @@ int _add_record_to_segment_table (segment* segment)
 		return _MEMORY_LACK;
 	}
 
-	st_record* new_record = (st_record*)malloc(sizeof(st_record));
-	
-	if (new_record == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
-	new_record->segment_ptr = segment;
-	new_record->pa			= segment->starting_va; // TODO: преобразовать!!!
-	new_record->is_loaded	= false;
+	_segment_table->records[_segment_table->first_free_index].is_loaded = false;
+	_segment_table->records[_segment_table->first_free_index].pa = segment->starting_va; // TODO: преобразовать!!!
+	_segment_table->records[_segment_table->first_free_index].segment_ptr = segment;
 
 	_segment_table->first_free_index++;
 	_segment_table->current_records_count++;
@@ -74,19 +75,31 @@ int _add_record_to_segment_table (segment* segment)
 	return _SUCCESS;
 }
 
-int _remove_record_from_segment_table (uint index)
+int _remove_record_from_segment_table (segment* segment)
 {
-	if (index >= _ST_MAX_RECORDS_COUNT
-		|| index < 0)
+	if (segment == NULL)
 	{
 		return _WRONG_PARAMS;
 	}
 
-	// TODO: что насчет first_free_index? нужно все сместить к началу массива
+	uint found_rec_index = 0;
+	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++) {
+		if ((_segment_table->records + record_index)->segment_ptr == segment)
+		{
+			found_rec_index = record_index;
+			break;
+		}
+	}
 
+	_clear_segment_table_record(found_rec_index);
+
+	uint last_rec_index = _segment_table->current_records_count - 1;
+	_segment_table->records[found_rec_index] = _segment_table->records[last_rec_index];
+
+	_clear_segment_table_record(last_rec_index);
+
+	_segment_table->first_free_index--;
 	_segment_table->current_records_count--;
-
-	_clear_segment_table_record(index);
 
 	return _SUCCESS;
 }
@@ -105,8 +118,6 @@ void _clear_segment_table_record (uint index)
 	record->segment_ptr = NULL;
 	record->pa			= NULL;
 	record->is_loaded	= false;
-
-	record = NULL;
 }
 
 segment* _find_segment (VA segment_starting_va)

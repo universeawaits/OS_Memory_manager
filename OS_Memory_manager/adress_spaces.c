@@ -22,7 +22,7 @@ int _init_pas(size_t size)
 		_pas[adress_index] = NULL;
 	}
 	_first_free_pa = _pas;
-	_last_free_pa = _pas + _pas_size - 1;
+	_last_free_pa = _pas + _pas_size;
 
 	return _SUCCESS;
 }
@@ -46,58 +46,124 @@ int _init_vas (size_t size)
 		_vas[adress_index] = NULL;
 	}
 	_first_free_va = _vas;
-	_last_free_va = _vas + _vas_size - 1;
+	_last_free_va = _vas + _vas_size;
 
 	return _SUCCESS;
 }
 
 uint _validate_pa (PA va)
 {
-	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
+	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
 	{
-		if (_pas[adress_index] == va) {
-			return adress_index;
+		if (_pas[adress_offset] == va) {
+			return adress_offset;
 		}
 	}
 	
-	return _FORBIDDEN_ADRESS;
+	return _FORBIDDEN_ADRESS_OFFSET;
 }
 
 uint _validate_va (VA va)
 {
-	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
+	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		if (_vas[adress_index] == va) {
-			return adress_index;
+		if (_vas[adress_offset] == va) {
+			return adress_offset;
 		}
 	}
 
-	return _FORBIDDEN_ADRESS;
+	return _FORBIDDEN_ADRESS_OFFSET;
 }
 
 void _defragment_vas ()
 {
-	// do smth with _first_free_va
+	//VA* starting_adress = _vas;
+	//do
+	//{
+	//	starting_adress = _first_adress_with_null_content(starting_adress);
+	//	_shift_vas_content_to_left (starting_adress);
+	//	starting_adress--;
+	//}
+	//while (starting_adress != NULL && starting_adress < _last_free_va);
+	////_shift_vas_content_to_left(_vas);
+	//_first_free_va = _first_adress_with_null_content(_vas);
+	VA* starting_adress = _vas;
+	size_t nulled_space_size = 0;
+	while (starting_adress != NULL)
+	{
+		nulled_space_size = _nulled_space_size(starting_adress);
+		_shift_vas_content_to_left(starting_adress, nulled_space_size);
+
+		starting_adress++;
+		starting_adress = _first_adress_with_null_content(starting_adress);
+
+		_print_vas();
+	}
+	_first_free_va = _first_adress_with_null_content(_vas);
+}
+
+size_t _nulled_space_size (VA* starting_adress)
+{
+	size_t space_size = 0;
+	VA* adress = starting_adress;
+	while (*adress == NULL)
+	{
+		space_size++;
+		adress++;
+	}
+
+	return space_size;
+}
+
+VA* _first_adress_with_null_content (VA* starting_adress)
+{
+	VA* starting_adress_copy = starting_adress;
+	while (starting_adress_copy < _last_free_va)
+	{
+		if (*starting_adress_copy == NULL)
+		{
+			return starting_adress_copy;
+		}
+		starting_adress_copy++;
+	}
+
+	return NULL;
+}
+
+void _shift_vas_content_to_left (VA* starting_adress, uint offset)
+{
+	if (offset == 0)
+	{
+		return;
+	}
+
+	VA* adress = starting_adress;
+	while (adress < _last_free_va - offset)
+	{
+		*adress = *(adress + offset);
+		*(adress + offset) = NULL;
+		adress++;
+	}
 }
 
 void _print_vas ()
 {
 	printf("Virtual adress space\n");
-	printf("Index\tAdress\t\n");
+	printf("Adress\t\tContent\n");
 
-	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
+	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		printf("%d\t%p\n", adress_index, *(_vas + adress_index));
+		printf("%p\t%c\n", _vas + adress_offset, _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
 	}
 }
 
 void _print_pas ()
 {
 	printf("Physical adress space\n");
-	printf("Index\tAdress\t\tContent\n");
+	printf("Adress\t\tContent\n");
 
-	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
+	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
 	{
-		printf("%d\t%p\n", adress_index, _pas[adress_index]);
+		printf("%p\t%c\n", _pas + adress_offset, _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
 	}
 }

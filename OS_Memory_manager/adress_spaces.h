@@ -28,7 +28,7 @@ segment;
 
 #define _PAS_MAX_SIZE 1024				// Максимальный размер физического адресного пространства (в байтах)
 #define _VAS_MAX_SIZE _PAS_MAX_SIZE		// Максимальный размер виртуального адресного пространства (в байтах)
-#define _FORBIDDEN_ADRESS -1			// Адрес вне выделенного адресного пространсва
+#define _FORBIDDEN_ADRESS_OFFSET -1		// Адрес вне выделенного адресного пространсва
 
 PA*			_pas;						// Физическое адресное пространство
 VA*			_vas;						// Виртуальное адресное пространство
@@ -42,15 +42,18 @@ VA*			_first_free_va;
 PA*			_last_free_pa;
 VA*			_last_free_va;
 
-int				_init_pas(size_t size);
-int				_init_vas(size_t size);
-uint			_validate_pa(PA va);
-uint			_validate_va(VA va);
-segment*		_find_segment(VA starting_va);
-void			_defragment_vas();
+int			_init_pas(size_t size);
+int			_init_vas(size_t size);
+uint		_validate_pa(PA va);
+uint		_validate_va(VA va);
+segment*	_find_segment(VA starting_va);
+void		_defragment_vas();
+size_t		_nulled_space_size(VA* starting_adress);
+VA*			_first_adress_with_null_content(VA* starting_adress);
+void		_shift_vas_content_to_left(VA* starting_adress, uint offset);
 
-void			_print_vas();
-void			_print_pas();
+void		_print_vas();
+void		_print_pas();
 
 
 #endif // !ADRESS_SPACES_H
