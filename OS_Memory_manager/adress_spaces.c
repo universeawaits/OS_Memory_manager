@@ -22,7 +22,7 @@ int _init_pas(size_t size)
 		_pas[adress_index] = NULL;
 	}
 	_first_free_pa = _pas;
-	_last_free_pa = _pas + _pas_size - 1;
+	_last_free_pa = _pas + _pas_size;
 
 	return _SUCCESS;
 }
@@ -46,7 +46,7 @@ int _init_vas (size_t size)
 		_vas[adress_index] = NULL;
 	}
 	_first_free_va = _vas;
-	_last_free_va = _vas + _vas_size - 1;
+	_last_free_va = _vas + _vas_size;
 
 	return _SUCCESS;
 }

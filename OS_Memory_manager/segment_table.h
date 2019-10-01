@@ -13,7 +13,7 @@
 
 // Максимальное количество записей в таблице сегментов
 #define _ST_MAX_RECORDS_COUNT (_VAS_MAX_SIZE / sizeof(segment))
-#define NO_SEGMENT -1
+#define _NO_SEGMENT -1
 
 // Тип, описывающий запись в таблице сегментов
 typedef struct
