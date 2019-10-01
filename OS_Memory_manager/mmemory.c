@@ -56,14 +56,30 @@ int _malloc (VA* ptr, size_t szBlock)
 
 int _free (VA ptr) 
 {
-	if (ptr == NULL ||
-		_validate_va(ptr) == _FORBIDDEN_ADRESS ||
-		_find_segment(ptr) == NULL)
+	if (ptr == NULL || _validate_va(ptr) == _FORBIDDEN_ADRESS_OFFSET)
 	{
 		return _WRONG_PARAMS;
 	}
 
-	ptr = NULL;
+	segment* found_segment = _find_segment(ptr);
+	if (found_segment == NULL)
+	{
+		return _WRONG_PARAMS;
+	}
+
+	uint adress_offset = 0;
+	uint segment_starting_adress_offset = _validate_va(found_segment->starting_va);
+	if (segment_starting_adress_offset == _FORBIDDEN_ADRESS_OFFSET)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	while (adress_offset < found_segment->size)
+	{
+		*(_vas + segment_starting_adress_offset + adress_offset) = NULL;
+		adress_offset++;
+	}
+	//ptr = NULL;
 	return _SUCCESS;
 }
 

@@ -53,26 +53,26 @@ int _init_vas (size_t size)
 
 uint _validate_pa (PA va)
 {
-	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
+	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
 	{
-		if (_pas[adress_index] == va) {
-			return adress_index;
+		if (_pas[adress_offset] == va) {
+			return adress_offset;
 		}
 	}
 	
-	return _FORBIDDEN_ADRESS;
+	return _FORBIDDEN_ADRESS_OFFSET;
 }
 
 uint _validate_va (VA va)
 {
-	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
+	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		if (_vas[adress_index] == va) {
-			return adress_index;
+		if (_vas[adress_offset] == va) {
+			return adress_offset;
 		}
 	}
 
-	return _FORBIDDEN_ADRESS;
+	return _FORBIDDEN_ADRESS_OFFSET;
 }
 
 void _defragment_vas ()
