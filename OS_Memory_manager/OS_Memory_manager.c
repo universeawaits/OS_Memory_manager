@@ -8,7 +8,7 @@
 
 int main ()
 {
-	size_t szPage = 100;
+	size_t szPage = 2;
 	uint n = 10;
 	test_init(n, szPage);
 
@@ -29,7 +29,7 @@ int main ()
 	test_malloc(&segment_starting_va4, size4);
 
 	VA segment_starting_va5 = NULL;
-	size_t size5 = 995;
+	size_t size5 = 15;
 	test_malloc(&segment_starting_va5, size5);
 
 	_print_vas();

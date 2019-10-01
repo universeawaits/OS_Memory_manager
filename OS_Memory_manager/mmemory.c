@@ -11,8 +11,6 @@ int _malloc (VA* ptr, size_t szBlock)
 	if (_first_free_va + szBlock > _last_free_va)
 	{
 		_defragment_vas();
-		_print_vas();
-
 		if (_first_free_va + szBlock > _last_free_va)
 		{
 			return _MEMORY_LACK;

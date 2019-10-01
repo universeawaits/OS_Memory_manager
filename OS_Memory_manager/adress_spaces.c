@@ -77,25 +77,44 @@ uint _validate_va (VA va)
 
 void _defragment_vas ()
 {
+	//VA* starting_adress = _vas;
+	//do
+	//{
+	//	starting_adress = _first_adress_with_null_content(starting_adress);
+	//	_shift_vas_content_to_left (starting_adress);
+	//	starting_adress--;
+	//}
+	//while (starting_adress != NULL && starting_adress < _last_free_va);
+	////_shift_vas_content_to_left(_vas);
+	//_first_free_va = _first_adress_with_null_content(_vas);
 	VA* starting_adress = _vas;
-	VA* prev_starting_adress = NULL;
-	do
+	size_t nulled_space_size = 0;
+	while (starting_adress != NULL)
 	{
+		nulled_space_size = _nulled_space_size(starting_adress);
+		_shift_vas_content_to_left(starting_adress, nulled_space_size);
+
+		starting_adress++;
 		starting_adress = _first_adress_with_null_content(starting_adress);
-		if (prev_starting_adress == starting_adress)
-		{
-			break;
-		}
-		
-		_shift_vas_content_to_left (starting_adress);
-		prev_starting_adress = starting_adress;
+
+		_print_vas();
 	}
-	while (starting_adress != NULL && starting_adress < _last_free_va);
-	//_shift_vas_content_to_left(_vas);
 	_first_free_va = _first_adress_with_null_content(_vas);
 }
 
-////
+size_t _nulled_space_size (VA* starting_adress)
+{
+	size_t space_size = 0;
+	VA* adress = starting_adress;
+	while (*adress == NULL)
+	{
+		space_size++;
+		adress++;
+	}
+
+	return space_size;
+}
+
 VA* _first_adress_with_null_content (VA* starting_adress)
 {
 	VA* starting_adress_copy = starting_adress;
@@ -111,14 +130,18 @@ VA* _first_adress_with_null_content (VA* starting_adress)
 	return NULL;
 }
 
-////
-void _shift_vas_content_to_left (VA* starting_adress)
+void _shift_vas_content_to_left (VA* starting_adress, uint offset)
 {
-	VA* adress = starting_adress;
-	while (adress < _last_free_va - 1)
+	if (offset == 0)
 	{
-		*adress = *(adress + 1);
-		*(adress + 1) = NULL;
+		return;
+	}
+
+	VA* adress = starting_adress;
+	while (adress < _last_free_va - offset)
+	{
+		*adress = *(adress + offset);
+		*(adress + offset) = NULL;
 		adress++;
 	}
 }
