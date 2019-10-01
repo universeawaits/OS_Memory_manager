@@ -48,7 +48,8 @@ uint		_validate_pa(PA va);
 uint		_validate_va(VA va);
 segment*	_find_segment(VA starting_va);
 void		_defragment_vas();
-VA*			_request_space (size_t size);
+VA*			_first_adress_with_null_content(VA* starting_adress);
+void		_shift_vas_content_to_left(VA* starting_adress);
 
 void		_print_vas();
 void		_print_pas();
