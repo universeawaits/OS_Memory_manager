@@ -77,7 +77,15 @@ uint _validate_va (VA va)
 
 void _defragment_vas ()
 {
-	// do smth with _first_free_va
+	
+}
+
+VA* _request_space (size_t size)
+{
+	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
+	{
+
+	}
 }
 
 void _print_vas ()

@@ -42,15 +42,16 @@ VA*			_first_free_va;
 PA*			_last_free_pa;
 VA*			_last_free_va;
 
-int				_init_pas(size_t size);
-int				_init_vas(size_t size);
-uint			_validate_pa(PA va);
-uint			_validate_va(VA va);
-segment*		_find_segment(VA starting_va);
-void			_defragment_vas();
+int			_init_pas(size_t size);
+int			_init_vas(size_t size);
+uint		_validate_pa(PA va);
+uint		_validate_va(VA va);
+segment*	_find_segment(VA starting_va);
+void		_defragment_vas();
+VA*			_request_space (size_t size);
 
-void			_print_vas();
-void			_print_pas();
+void		_print_vas();
+void		_print_pas();
 
 
 #endif // !ADRESS_SPACES_H
