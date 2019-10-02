@@ -77,6 +77,11 @@ uint _validate_va (VA va)
 
 VA* _request_free_space (size_t size)
 {
+	if (size == 0)
+	{
+		return _vas;
+	}
+
 	VA* starting_adress = _vas;
 	size_t nulled_space_size = 0;
 	while (starting_adress != NULL)
@@ -111,8 +116,13 @@ void _defragment_vas ()
 
 size_t _nulled_space_size (VA* starting_adress)
 {
-	size_t space_size = 0;
+	if (starting_adress == NULL)
+	{
+		starting_adress = _vas;
+	}
 	VA* adress = starting_adress;
+	size_t space_size = 0;
+
 	while (*adress == NULL)
 	{
 		space_size++;
@@ -124,7 +134,12 @@ size_t _nulled_space_size (VA* starting_adress)
 
 VA* _first_va_with_null_content (VA* starting_adress)
 {
+	if (starting_adress == NULL)
+	{
+		starting_adress = _vas;
+	}
 	VA* starting_adress_copy = starting_adress;
+
 	while (starting_adress_copy < _last_free_va)
 	{
 		if (*starting_adress_copy == NULL)
