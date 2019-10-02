@@ -32,11 +32,8 @@ int main ()
 	size_t size5 = 15;
 	test_malloc(&segment_starting_va5, size5);
 
-	_print_vas();
-	_print_segment_table();
-
 	test_free(segment_starting_va1);
-	test_free(segment_starting_va4);
+	test_free(segment_starting_va5);
 
 	_print_vas();
 

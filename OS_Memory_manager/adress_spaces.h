@@ -36,11 +36,11 @@ VA*			_vas;						// Виртуальное адресное пространство
 size_t		_pas_size;					// Текущий размер физического адресного пространства
 size_t		_vas_size;					// Текущий размер виртуального адресного пространства
 
-PA*			_first_free_pa;
-VA*			_first_free_va;
+PA*			_first_free_pa;				// Первый свободный физический адрес 
+VA*			_first_free_va;				// Первый свободный виртуальный адрес 
 
-PA*			_last_free_pa;
-VA*			_last_free_va;
+PA*			_last_free_pa;				// Последний свободный физический адрес 
+VA*			_last_free_va;				// Последний свободный виртуальный адрес 
 
 int			_init_pas (size_t size);
 int			_init_vas (size_t size);

@@ -82,7 +82,7 @@ VA* _request_free_space (size_t size)
 	while (starting_adress != NULL)
 	{
 		nulled_space_size = _nulled_space_size(starting_adress);
-		if (nulled_space_size == size)
+		if (nulled_space_size >= size)
 		{
 			return starting_adress;
 		}
