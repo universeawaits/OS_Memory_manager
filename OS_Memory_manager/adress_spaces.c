@@ -155,22 +155,32 @@ void _shift_vas_content_to_left (VA* starting_adress, uint offset)
 
 void _print_vas ()
 {
-	printf("Virtual adress space\n");
-	printf("Adress\t\tContent\n");
+	printf("\n -------------------------------\n");
+	printf("| Virtual adress space\t\t|");
+	printf("\n -------------------------------\n");
+	printf("| Adress\t| Content\t|");
+	printf("\n -------------------------------\n");
 
 	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		printf("%p\t%c\n", *(_vas + adress_offset), _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
+		printf("| %p\t| %c\t\t|\n", *(_vas + adress_offset), _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
 	}
+
+	printf(" -------------------------------\n");
 }
 
 void _print_pas ()
 {
-	printf("Physical adress space\n");
-	printf("Adress\t\tContent\n");
+	printf("\n -------------------------------\n");
+	printf("| Physical adress space\t\t|");
+	printf("\n -------------------------------\n");
+	printf("| Adress\t| Content\t|");
+	printf("\n -------------------------------\n");
 
-	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
+	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		printf("%p\t%c\n", *(_pas + adress_offset), _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
+		printf("| %p\t| %c\t\t|\n", *(_pas + adress_offset), _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
 	}
+
+	printf(" -------------------------------\n");
 }

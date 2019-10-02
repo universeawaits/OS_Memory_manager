@@ -35,7 +35,11 @@ int _init_segment_table ()
 
 void _print_segment_table ()
 {
-	printf("Index\tSegment VA\tSegment PA\tIs loaded\n");
+	printf	("\n -------------------------------------------------------\n" \
+			"| Segment table                                         |" \
+			"\n -------------------------------------------------------\n");
+	printf("| Index\t| Segment VA\t| Segment PA\t| Is loaded\t|\n");
+	printf(" -------------------------------------------------------\n");
 
 	for (uint record_index = 0; record_index < _ST_MAX_RECORDS_COUNT; record_index++)
 	{
@@ -45,9 +49,14 @@ void _print_segment_table ()
 		}
 		else 
 		{
-			printf	("%d\t%p\t%p\t%d",
+			if (_segment_table->records[record_index].segment_ptr == NULL)
+			{
+				continue;
+			}
+
+			printf	("| %d\t| %p\t| %p\t| %d\t\t|",
 					record_index,
-					_segment_table->records[record_index].segment_ptr,
+					_segment_table->records[record_index].segment_ptr->starting_va,
 					_segment_table->records[record_index].pa,
 					_segment_table->records[record_index].is_loaded
 					);
@@ -55,6 +64,8 @@ void _print_segment_table ()
 
 		printf("\n");
 	}
+
+	printf(" -------------------------------------------------------\n");
 }
 
 int _add_record_to_segment_table (segment* segment)
