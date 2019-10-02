@@ -43,14 +43,15 @@ PA*			_last_free_pa;				// Последний свободный физический адрес
 VA*			_last_free_va;				// Последний свободный виртуальный адрес 
 
 int			_init_pas (size_t size);
+uint		_validate_pa(PA va);
+
 int			_init_vas (size_t size);
-uint		_validate_pa (PA va);
 uint		_validate_va (VA va);
 segment*	_find_segment (VA starting_va);
 VA*			_request_free_space (size_t size);
 void		_defragment_vas ();
 size_t		_nulled_space_size (VA* starting_adress);
-VA*			_first_adress_with_null_content (VA* starting_adress);
+VA*			_first_va_with_null_content (VA* starting_adress);
 void		_shift_vas_content_to_left (VA* starting_adress, uint offset);
 
 void		_print_vas();

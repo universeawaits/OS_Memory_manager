@@ -88,8 +88,10 @@ VA* _request_free_space (size_t size)
 		}
 
 		starting_adress++;
-		starting_adress = _first_adress_with_null_content(starting_adress);
+		starting_adress = _first_va_with_null_content(starting_adress);
 	}
+
+	return NULL;
 }
 
 void _defragment_vas ()
@@ -102,9 +104,9 @@ void _defragment_vas ()
 		_shift_vas_content_to_left(starting_adress, nulled_space_size);
 
 		starting_adress++;
-		starting_adress = _first_adress_with_null_content(starting_adress);
+		starting_adress = _first_va_with_null_content(starting_adress);
 	}
-	_first_free_va = _first_adress_with_null_content(_vas);
+	_first_free_va = _first_va_with_null_content(_vas);
 }
 
 size_t _nulled_space_size (VA* starting_adress)
@@ -120,7 +122,7 @@ size_t _nulled_space_size (VA* starting_adress)
 	return space_size;
 }
 
-VA* _first_adress_with_null_content (VA* starting_adress)
+VA* _first_va_with_null_content (VA* starting_adress)
 {
 	VA* starting_adress_copy = starting_adress;
 	while (starting_adress_copy < _last_free_va)

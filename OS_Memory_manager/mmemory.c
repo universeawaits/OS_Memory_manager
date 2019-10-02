@@ -11,7 +11,7 @@ int _malloc (VA* ptr, size_t szBlock)
 	if (_first_free_va + szBlock > _last_free_va)
 	{
 		_first_free_va = _request_free_space (szBlock);
-		if (_first_free_va + szBlock > _last_free_va)
+		if ((_first_free_va == NULL) || _first_free_va + szBlock > _last_free_va)
 		{
 			_defragment_vas();
 			if (_first_free_va + szBlock > _last_free_va)
@@ -53,6 +53,8 @@ int _malloc (VA* ptr, size_t szBlock)
 	{
 		return add_rec_return_code;
 	}
+
+	
 
 	return _SUCCESS;
 }

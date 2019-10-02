@@ -4,8 +4,7 @@
 #include <stdlib.h >
 #include <stdio.h>
 
-// —сылка на экземпл€р сегментной таблицы
-segment_table* _segment_table;
+segment_table* _segment_table;	// —сылка на экземпл€р сегментной таблицы
 
 int _init_segment_table ()
 {
