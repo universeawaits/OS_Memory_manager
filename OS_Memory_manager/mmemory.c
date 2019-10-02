@@ -10,10 +10,14 @@ int _malloc (VA* ptr, size_t szBlock)
 {
 	if (_first_free_va + szBlock > _last_free_va)
 	{
-		_defragment_vas();
+		_first_free_va = _request_free_space (szBlock);
 		if (_first_free_va + szBlock > _last_free_va)
 		{
-			return _MEMORY_LACK;
+			_defragment_vas();
+			if (_first_free_va + szBlock > _last_free_va)
+			{
+				return _MEMORY_LACK;
+			}
 		}
 	}
 

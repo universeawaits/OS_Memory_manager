@@ -41,7 +41,7 @@ int main ()
 	_print_vas();
 
 	VA segment_starting_va6 = NULL;
-	size_t size6 = 2;
+	size_t size6 = 1;
 	test_malloc(&segment_starting_va6, size6);
 
 	_print_vas();

@@ -75,18 +75,25 @@ uint _validate_va (VA va)
 	return _FORBIDDEN_ADRESS_OFFSET;
 }
 
+VA* _request_free_space (size_t size)
+{
+	VA* starting_adress = _vas;
+	size_t nulled_space_size = 0;
+	while (starting_adress != NULL)
+	{
+		nulled_space_size = _nulled_space_size(starting_adress);
+		if (nulled_space_size == size)
+		{
+			return starting_adress;
+		}
+
+		starting_adress++;
+		starting_adress = _first_adress_with_null_content(starting_adress);
+	}
+}
+
 void _defragment_vas ()
 {
-	//VA* starting_adress = _vas;
-	//do
-	//{
-	//	starting_adress = _first_adress_with_null_content(starting_adress);
-	//	_shift_vas_content_to_left (starting_adress);
-	//	starting_adress--;
-	//}
-	//while (starting_adress != NULL && starting_adress < _last_free_va);
-	////_shift_vas_content_to_left(_vas);
-	//_first_free_va = _first_adress_with_null_content(_vas);
 	VA* starting_adress = _vas;
 	size_t nulled_space_size = 0;
 	while (starting_adress != NULL)
@@ -96,8 +103,6 @@ void _defragment_vas ()
 
 		starting_adress++;
 		starting_adress = _first_adress_with_null_content(starting_adress);
-
-		_print_vas();
 	}
 	_first_free_va = _first_adress_with_null_content(_vas);
 }
@@ -153,7 +158,7 @@ void _print_vas ()
 
 	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		printf("%p\t%c\n", _vas + adress_offset, _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
+		printf("%p\t%c\n", *(_vas + adress_offset), _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
 	}
 }
 
@@ -164,6 +169,6 @@ void _print_pas ()
 
 	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
 	{
-		printf("%p\t%c\n", _pas + adress_offset, _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
+		printf("%p\t%c\n", *(_pas + adress_offset), _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
 	}
 }
