@@ -4,9 +4,6 @@
 #include <stdlib.h >
 #include <stdio.h>
 
-// —сылка на экземпл€р сегментной таблицы
-segment_table* _segment_table;
-
 int _init_segment_table ()
 {
 	_segment_table = (segment_table*)malloc(sizeof(segment_table));
@@ -27,35 +24,10 @@ int _init_segment_table ()
 	for (uint rec_index = 0; rec_index < _ST_MAX_RECORDS_COUNT; rec_index++)
 	{
 		_segment_table->records[rec_index].is_loaded = false;
-		_segment_table->records[rec_index].pa = NULL;
 		_segment_table->records[rec_index].segment_ptr = NULL;
 	}
 
 	return _SUCCESS;
-}
-
-void _print_segment_table ()
-{
-	printf("Index\tSegment VA\tSegment PA\tIs loaded\n");
-
-	for (uint record_index = 0; record_index < _ST_MAX_RECORDS_COUNT; record_index++)
-	{
-		if (_segment_table->records + record_index == NULL)
-		{
-			continue;
-		}
-		else 
-		{
-			printf	("%d\t%p\t%p\t%d",
-					record_index,
-					_segment_table->records[record_index].segment_ptr,
-					_segment_table->records[record_index].pa,
-					_segment_table->records[record_index].is_loaded
-					);
-		}
-
-		printf("\n");
-	}
 }
 
 int _add_record_to_segment_table (segment* segment)
@@ -65,8 +37,7 @@ int _add_record_to_segment_table (segment* segment)
 		return _MEMORY_LACK;
 	}
 
-	_segment_table->records[_segment_table->first_free_index].is_loaded = false;
-	_segment_table->records[_segment_table->first_free_index].pa = segment->starting_va; // TODO: преобразовать!!!
+	_segment_table->records[_segment_table->first_free_index].is_loaded = true;
 	_segment_table->records[_segment_table->first_free_index].segment_ptr = segment;
 
 	_segment_table->first_free_index++;
@@ -116,7 +87,6 @@ void _clear_segment_table_record (uint index)
 	st_record* record = _segment_table->records + index;
 
 	record->segment_ptr = NULL;
-	record->pa			= NULL;
 	record->is_loaded	= false;
 }
 
@@ -131,4 +101,58 @@ segment* _find_segment (VA segment_starting_va)
 	}
 
 	return NULL;
+}
+
+st_record* _find_record (segment* segment)
+{
+	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++)
+	{
+		if (_segment_table->records[record_index].segment_ptr == segment)
+		{
+			return (_segment_table->records + record_index);
+		}
+	}
+
+	return NULL;
+}
+
+void _mark_as_unloaded (segment* segment)
+{
+	st_record* found_rec = _find_record(segment);
+	found_rec->is_loaded = false;
+}
+
+void _print_segment_table()
+{
+	printf("\n -------------------------------------------------------\n" \
+		"| Segment table                                         |" \
+		"\n -------------------------------------------------------\n");
+	printf("| Index\t| Segment VA\t| Segment PA\t| Is loaded\t|\n");
+	printf(" -------------------------------------------------------\n");
+
+	for (uint record_index = 0; record_index < _ST_MAX_RECORDS_COUNT; record_index++)
+	{
+		if (_segment_table->records + record_index == NULL)
+		{
+			continue;
+		}
+		else
+		{
+			if (_segment_table->records[record_index].segment_ptr == NULL)
+			{
+				continue;
+			}
+
+			printf("| %d\t| %p\t| %p\t| %d\t\t|",
+				record_index,
+				_segment_table->records[record_index].segment_ptr->starting_va,
+				_segment_table->records[record_index].segment_ptr->starting_pa,
+				_segment_table->records[record_index].is_loaded
+			);
+		}
+
+		printf("\n");
+	}
+
+	printf(" -------------------------------------------------------\n");
 }
