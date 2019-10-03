@@ -325,6 +325,8 @@ void _print_pas ()
 	printf(" -------------------------------\n");
 }
 
+
+
 int _request_free_space (size_t size)
 {
 	if (_first_free_pa + size > _last_free_pa)
@@ -356,7 +358,7 @@ int _request_free_space (size_t size)
 	return _SUCCESS;
 }
 
-int	_init_first_free_adress(size_t content_size)
+int	_init_first_free_adress (size_t content_size)
 {
 	*_first_free_va = (VA)malloc(sizeof(VA) * content_size);
 	if (*_first_free_va == NULL)
@@ -373,7 +375,7 @@ int	_init_first_free_adress(size_t content_size)
 	return _SUCCESS;
 }
 
-int _allocate_segment(size_t size)
+int _allocate_segment (size_t size)
 {
 	VA vsegment_space = (VA)malloc(sizeof(char) * size);
 	if (vsegment_space == NULL)
@@ -403,29 +405,21 @@ int _allocate_segment(size_t size)
 
 	return _SUCCESS;
 }
-int	_register_segment(segment* segment)
+
+int	_register_segment (segment* segment)
 {
 	int add_rec_return_code = _add_record_to_segment_table(segment);
 	return add_rec_return_code;
 
 }
-void _renew_first_free_adress(size_t prob_null_adress_offset)
-{
-	if (*(_first_free_va + prob_null_adress_offset) == NULL)
-	{
-		_first_free_va += prob_null_adress_offset;
-	}
-	else
-	{
-		_first_free_va = _first_va_with_null_content(_vas);
-	}
 
-	if (*(_first_free_pa + prob_null_adress_offset) == NULL)
-	{
-		_first_free_pa += prob_null_adress_offset;
-	}
-	else
-	{
-		_first_free_pa = _first_pa_with_null_content(_pas);
-	}
+void _renew_first_free_adress (size_t prob_null_adress_offset)
+{
+#define OFFSET prob_null_adress_offset
+	if (*(_first_free_va + OFFSET) == NULL) _first_free_va += OFFSET;
+	else _first_free_va = _first_va_with_null_content(_vas);
+
+	if (*(_first_free_pa + OFFSET) == NULL) _first_free_pa += OFFSET;
+	else _first_free_pa = _first_pa_with_null_content(_pas);
+#undef OFFSET
 }

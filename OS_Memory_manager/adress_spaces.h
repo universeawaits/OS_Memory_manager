@@ -73,10 +73,11 @@ void		_print_vas();
 void		_print_pas();
 
 
-#endif // !ADRESS_SPACES_H
-
 int			_request_free_space (size_t size);
 int			_init_first_free_adress (size_t content_size);
 int			_allocate_segment (size_t size);
 int			_register_segment (segment* segment);
 void		_renew_first_free_adress (size_t prob_null_adress_offset);
+
+#endif // !ADRESS_SPACES_H
+
