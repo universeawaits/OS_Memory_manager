@@ -361,16 +361,8 @@ int _request_free_space (size_t size)
 int	_init_first_free_adress (size_t content_size)
 {
 	*_first_free_va = (VA)malloc(sizeof(VA) * content_size);
-	if (*_first_free_va == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
-
 	*_first_free_pa = (PA)malloc(sizeof(PA) * content_size);
-	if (*_first_free_pa == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
+	if (*_first_free_va == NULL || *_first_free_pa == NULL) return _UNKNOWN_ERR;
 
 	return _SUCCESS;
 }
