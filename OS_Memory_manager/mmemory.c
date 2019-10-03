@@ -11,7 +11,7 @@ int _malloc (VA* ptr, size_t szBlock)
 	if (szBlock == 0 || ptr == NULL) return _WRONG_PARAMS;
 	
 	int return_code = 0;
-	return_code = _request_free_space(szBlock);
+	return_code = _organize_vspace_for_segment_allocation(szBlock);
 	if (return_code != _SUCCESS) return return_code;
 
 	return_code = _init_first_free_adress(szBlock);
@@ -19,7 +19,7 @@ int _malloc (VA* ptr, size_t szBlock)
 
 	return_code = _allocate_segment(szBlock);
 	if (return_code != _SUCCESS) return return_code;
-
+	 
 	*ptr = *_first_free_va;
 	segment* new_segment = (segment*)malloc(sizeof(segment));
 	if (new_segment == NULL) return _UNKNOWN_ERR;

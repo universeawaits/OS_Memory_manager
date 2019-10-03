@@ -122,6 +122,7 @@ void _mark_as_unloaded (segment* segment)
 	found_rec->is_loaded = false;
 }
 
+
 void _print_segment_table()
 {
 	printf("\n -----------------------------------------------\n" \

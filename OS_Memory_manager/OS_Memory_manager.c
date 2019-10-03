@@ -37,7 +37,7 @@ int main ()
 	test_malloc(&s5, size);
 
 	VA s6 = NULL;
-	size = 232;
+	size = 231;
 	test_malloc(&s6, size);
 
 	_print_vas();
