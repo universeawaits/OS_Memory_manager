@@ -8,40 +8,40 @@
 
 int main ()
 {
-	size_t szPage = 2;
-	uint n = 10;
-	test_init(n, szPage);
+	size_t szPage = 5;
+	uint n = 100;
+	test_init(szPage, n);
 
-	VA segment_starting_va1 = NULL;
-	size_t size1 = 1;
-	test_malloc(&segment_starting_va1, size1);
+	VA s1 = NULL;
+	size_t size = 2;
+	test_malloc(&s1, size);
 
-	VA segment_starting_va2 = NULL;
-	size_t size2 = 2;
-	test_malloc(&segment_starting_va2, size2);
+	VA s2 = NULL;
+	size = 1;
+	test_malloc(&s2, size);
 
-	VA segment_starting_va3 = NULL;
-	size_t size3 = 3;
-	test_malloc(&segment_starting_va3, size3);
+	VA s3 = NULL;
+	size = 3;
+	test_malloc(&s3, size);
 
-	VA segment_starting_va4 = NULL;
-	size_t size4 = 14;
-	test_malloc(&segment_starting_va4, size4);
+	test_free(s2);
 
-	_print_segment_table();
+	VA s4 = NULL;
+	size = 44;
+	test_malloc(&s4, size);
 
-	test_free(segment_starting_va1);
-	test_free(segment_starting_va3);
+	test_free(s4);
+
+	VA s5 = NULL;
+	size = 12;
+	test_malloc(&s5, size);
+
+	VA s6 = NULL;
+	size = 232;
+	test_malloc(&s6, size);
 
 	_print_vas();
-	_print_segment_table();
-
-	VA segment_starting_va6 = NULL;
-	size_t size6 = 4;
-	test_malloc(&segment_starting_va6, size6);
-
-	_print_vas();
-	_print_segment_table();
+	_print_pas();
 
 	return 0;
 }
