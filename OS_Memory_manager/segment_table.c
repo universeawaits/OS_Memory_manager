@@ -124,11 +124,11 @@ void _mark_as_unloaded (segment* segment)
 
 void _print_segment_table()
 {
-	printf("\n -------------------------------------------------------\n" \
-		"| Segment table                                         |" \
-		"\n -------------------------------------------------------\n");
-	printf("| Index\t| Segment VA\t| Segment PA\t| Is loaded\t|\n");
-	printf(" -------------------------------------------------------\n");
+	printf("\n -----------------------------------------------\n" \
+		"| Segment table                                 |" \
+		"\n -----------------------------------------------\n");
+	printf("| Segment VA\t| Segment PA\t| Is loaded\t|\n");
+	printf(" -----------------------------------------------\n");
 
 	for (uint record_index = 0; record_index < _ST_MAX_RECORDS_COUNT; record_index++)
 	{
@@ -143,8 +143,7 @@ void _print_segment_table()
 				continue;
 			}
 
-			printf("| %d\t| %p\t| %p\t| %d\t\t|",
-				record_index,
+			printf("| %p\t| %p\t| %d\t\t|",
 				_segment_table->records[record_index].segment_ptr->starting_va,
 				_segment_table->records[record_index].segment_ptr->starting_pa,
 				_segment_table->records[record_index].is_loaded
@@ -154,5 +153,5 @@ void _print_segment_table()
 		printf("\n");
 	}
 
-	printf(" -------------------------------------------------------\n");
+	printf(" -----------------------------------------------\n");
 }
