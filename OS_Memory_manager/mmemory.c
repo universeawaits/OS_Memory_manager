@@ -8,102 +8,30 @@
 
 int _malloc (VA* ptr, size_t szBlock)
 {
-	if (szBlock == 0 || ptr == NULL)
-	{
-		return _WRONG_PARAMS;
-	}
+	if (szBlock == 0 || ptr == NULL) return _WRONG_PARAMS;
+	
+	int return_code = 0;
+	return_code = _request_free_space(szBlock);
+	if (return_code != _SUCCESS) return return_code;
 
-	if (_first_free_pa + szBlock > _last_free_pa)
-	{
-		_first_free_pa = _request_free_pspace(szBlock);
-		if ((_first_free_pa == NULL) || _first_free_pa + szBlock > _last_free_pa)
-		{
-			_defragment_pas();
-			if ((_first_free_pa == NULL) || _first_free_pa + szBlock > _last_free_pa)
-			{
-				return _MEMORY_LACK;
-			}
-		}
-	}
+	return_code = _init_first_free_adress(szBlock);
+	if (return_code != _SUCCESS) return return_code;
 
-	if (_first_free_va + szBlock > _last_free_va)
-	{
-		_first_free_va = _request_free_vspace (szBlock);
-		if ((_first_free_va == NULL) || _first_free_va + szBlock > _last_free_va)
-		{
-			_defragment_vas();
-			if ((_first_free_va == NULL) || _first_free_va + szBlock > _last_free_va)
-			{
-				return _MEMORY_LACK;
-			}
-		}
-	}///
-
-	*_first_free_va = (VA)malloc(sizeof(VA) * szBlock);
-	if (*_first_free_va == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
-
-	*_first_free_pa = (PA)malloc(sizeof(PA) * szBlock);
-	if (*_first_free_pa == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}///
-
-	VA vsegment_space = (VA)malloc(sizeof(char) * szBlock);
-
-	uint curr_adress_offset = 0;
-	while (curr_adress_offset < szBlock)
-	{
-		*(_first_free_va + curr_adress_offset) = vsegment_space + curr_adress_offset;
-		curr_adress_offset++;
-	}
-
-	PA psegment_space = (PA)malloc(sizeof(char) * szBlock);
-
-	curr_adress_offset = 0;
-	while (curr_adress_offset < szBlock)
-	{
-		*(_first_free_pa + curr_adress_offset) = psegment_space + curr_adress_offset;
-		curr_adress_offset++;
-	}///
+	return_code = _allocate_segment(szBlock);
+	if (return_code != _SUCCESS) return return_code;
 
 	*ptr = *_first_free_va;
-
 	segment* new_segment = (segment*)malloc(sizeof(segment));
-	if (new_segment == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
+	if (new_segment == NULL) return _UNKNOWN_ERR;
 
-	new_segment->size = szBlock;
-	new_segment->starting_va = *ptr;
-	new_segment->starting_pa = *_first_free_pa;
+	new_segment->size			= szBlock;
+	new_segment->starting_va	= *ptr;
+	new_segment->starting_pa	= *_first_free_pa;
 
-	int add_rec_return_code = _add_record_to_segment_table(new_segment);
-	if (add_rec_return_code != _SUCCESS)
-	{
-		return add_rec_return_code;
-	}///
+	return_code = _register_segment(new_segment);
+	if (return_code != _SUCCESS) return return_code;
 
-	if (*(_first_free_va + szBlock) == NULL)
-	{
-		_first_free_va += szBlock;
-	}
-	else
-	{
-		_first_free_va = _first_va_with_null_content(_vas);
-	}
-
-	if (*(_first_free_pa + szBlock) == NULL)
-	{
-		_first_free_pa += szBlock;
-	}
-	else
-	{
-		_first_free_pa = _first_pa_with_null_content(_pas);
-	}///
+	_renew_first_free_adress(szBlock);
 
 	return _SUCCESS;
 }

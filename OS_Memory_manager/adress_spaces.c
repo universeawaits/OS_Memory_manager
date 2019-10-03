@@ -324,3 +324,108 @@ void _print_pas ()
 
 	printf(" -------------------------------\n");
 }
+
+int _request_free_space (size_t size)
+{
+	if (_first_free_pa + size > _last_free_pa)
+	{
+		_first_free_pa = _request_free_pspace(size);
+		if ((_first_free_pa == NULL) || _first_free_pa + size > _last_free_pa)
+		{
+			_defragment_pas();
+			if ((_first_free_pa == NULL) || _first_free_pa + size > _last_free_pa)
+			{
+				return _MEMORY_LACK;
+			}
+		}
+	}
+
+	if (_first_free_va + size > _last_free_va)
+	{
+		_first_free_va = _request_free_vspace(size);
+		if ((_first_free_va == NULL) || _first_free_va + size > _last_free_va)
+		{
+			_defragment_vas();
+			if ((_first_free_va == NULL) || _first_free_va + size > _last_free_va)
+			{
+				return _MEMORY_LACK;
+			}
+		}
+	}
+
+	return _SUCCESS;
+}
+
+int	_init_first_free_adress(size_t content_size)
+{
+	*_first_free_va = (VA)malloc(sizeof(VA) * content_size);
+	if (*_first_free_va == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	*_first_free_pa = (PA)malloc(sizeof(PA) * content_size);
+	if (*_first_free_pa == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	return _SUCCESS;
+}
+
+int _allocate_segment(size_t size)
+{
+	VA vsegment_space = (VA)malloc(sizeof(char) * size);
+	if (vsegment_space == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	uint curr_adress_offset = 0;
+	while (curr_adress_offset < size)
+	{
+		*(_first_free_va + curr_adress_offset) = vsegment_space + curr_adress_offset;
+		curr_adress_offset++;
+	}
+
+	PA psegment_space = (PA)malloc(sizeof(char) * size);
+	if (psegment_space == NULL)
+	{
+		return _UNKNOWN_ERR;
+	}
+
+	curr_adress_offset = 0;
+	while (curr_adress_offset < size)
+	{
+		*(_first_free_pa + curr_adress_offset) = psegment_space + curr_adress_offset;
+		curr_adress_offset++;
+	}
+
+	return _SUCCESS;
+}
+int	_register_segment(segment* segment)
+{
+	int add_rec_return_code = _add_record_to_segment_table(segment);
+	return add_rec_return_code;
+
+}
+void _renew_first_free_adress(size_t prob_null_adress_offset)
+{
+	if (*(_first_free_va + prob_null_adress_offset) == NULL)
+	{
+		_first_free_va += prob_null_adress_offset;
+	}
+	else
+	{
+		_first_free_va = _first_va_with_null_content(_vas);
+	}
+
+	if (*(_first_free_pa + prob_null_adress_offset) == NULL)
+	{
+		_first_free_pa += prob_null_adress_offset;
+	}
+	else
+	{
+		_first_free_pa = _first_pa_with_null_content(_pas);
+	}
+}

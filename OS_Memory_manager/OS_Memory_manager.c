@@ -42,6 +42,7 @@ int main ()
 
 	_print_vas();
 	_print_pas();
+	_print_segment_table();
 
 	return 0;
 }
