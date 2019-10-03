@@ -12,14 +12,14 @@ int _init_pas(size_t size)
 	if (_pas == NULL) return _UNKNOWN_ERR;
 
 	// Ёмул€ци€ зан€тости последних адресов _pas сегментной таблицей и тд
-	_pas_size = size - _PAS_MIN_SIZE + 1;
-
+	_pas_size = size - _PAS_MIN_SIZE;
 	for (uint adress_index = 0; adress_index < _pas_size; adress_index++)
 	{
 		_pas[adress_index] = NULL;
 	}
 	_first_free_pa = _pas;
 	_last_free_pa = _pas + _pas_size;
+	*_last_free_pa = NULL;
 
 	return _SUCCESS;
 }
@@ -32,72 +32,50 @@ int _init_vas (size_t size)
 	if (_vas == NULL) return _UNKNOWN_ERR;
 
 	_vas_size = size;
-
 	for (uint adress_index = 0; adress_index < _vas_size; adress_index++)
 	{
 		_vas[adress_index] = NULL;
 	}
 	_first_free_va = _vas;
-	_last_free_va = _vas + _vas_size;
+	_last_free_va = _vas + _vas_size - 1;
+	*_last_free_va = NULL;
 
 	return _SUCCESS;
 }
 
-uint _validate_pa (VA pa)
-{
-	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
-	{
-		if (_pas[adress_offset] == pa) return adress_offset;
-	}
-	
-	return _FORBIDDEN_ADRESS_OFFSET;
-}
-
-uint _validate_va (VA va)
+uint _adress_abs_offset (VA* space, VA adress)
 {
 	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
-		if (_vas[adress_offset] == va) return adress_offset;
+		if (_vas[adress_offset] == adress) return adress_offset;
 	}
 
 	return _FORBIDDEN_ADRESS_OFFSET;
 }
 
-void _load_into_mem (segment* segment)
+VA*	_request_free_space_region (VA* space, VA* last_free_space_adress, size_t size)
 {
-	uint curr_adress_offset = 0;
-	while (curr_adress_offset < sizeof(char) * segment->size)
-	{
-		*(_first_free_pa + curr_adress_offset) = segment->starting_pa + curr_adress_offset;
-		curr_adress_offset++;
-	}
+	if (size == 0) return space;
 
-	_first_free_pa = _first_pa_with_null_content(_pas);
-}
-
-VA*	_request_free_pspace (size_t size)
-{
-	if (size == 0) return _pas;
-
-	VA* starting_adress = _pas;
+	VA* starting_adress = space;
 	size_t nulled_space_size = 0;
 	while (starting_adress != NULL)
 	{
- 		nulled_space_size = _nulled_pspace_size(starting_adress);
+ 		nulled_space_size = _nulled_space_region_size(space, starting_adress);
 		if (nulled_space_size >= size) return starting_adress;
 
 		starting_adress++;
-		starting_adress = _first_pa_with_null_content(starting_adress);
+		starting_adress = _first_null_content_adress(space, starting_adress, last_free_space_adress);
 	}
 
 	return NULL;
 }
 
-size_t _nulled_pspace_size (VA* starting_adress)
+size_t _nulled_space_region_size (VA* space, VA* space_region)
 {
-	if (starting_adress == NULL) starting_adress = _pas;
+	if (space_region == NULL) space_region = space;
 
-	VA* adress = starting_adress;
+	VA* adress = space_region;
 	size_t space_size = 0;
 	while (*adress == NULL)
 	{
@@ -108,24 +86,10 @@ size_t _nulled_pspace_size (VA* starting_adress)
 	return space_size;
 }
 
-VA* _first_pa_with_null_content (VA* starting_adress)
-{
-	if (starting_adress == NULL) starting_adress = _pas;
-
-	VA* starting_adress_copy = starting_adress;
-	while (starting_adress_copy < _last_free_pa)
-	{
-		if (*starting_adress_copy == NULL) return starting_adress_copy;
-		starting_adress_copy++;
-	}
-
-	return NULL;
-}
-
 void _unload_from_mem (segment* segment)
 {
 	uint curr_adress_offset = 0;
-	VA* starting_adress_ptr = _pas + _validate_pa(segment->starting_pa);
+	VA* starting_adress_ptr = _pas + _adress_abs_offset(_pas, segment->starting_pa);
 	while (curr_adress_offset < sizeof(char) * segment->size)
 	{
 		*(starting_adress_ptr + curr_adress_offset) = NULL;
@@ -140,75 +104,30 @@ void _load_adjacent_segments_into_mem (segment* central_segment)
 
 }
 
-VA* _request_free_vspace (size_t size)
+VA* _defragment_space (VA* space, VA* last_free_space_adress)
 {
-	if (size == 0) return _vas;
-
-	VA* starting_adress = _vas;
-	size_t nulled_space_size = 0;
+	VA* starting_adress = space;
+	size_t nulled_space_region_size = 0;
 	while (starting_adress != NULL)
 	{
-		nulled_space_size = _nulled_vspace_size(starting_adress);
-		if (nulled_space_size >= size) return starting_adress;
+		nulled_space_region_size = _nulled_space_region_size(_vas, starting_adress);
+		_shift_space_content_left(starting_adress, _last_free_va, nulled_space_region_size);
 
 		starting_adress++;
-		starting_adress = _first_va_with_null_content(starting_adress);
+		starting_adress = _first_null_content_adress(
+			space, starting_adress, last_free_space_adress
+			);
 	}
-
-	return NULL;
+	_print_space(_vas, _vas_size, "v");
+	return _first_null_content_adress(space, space, last_free_space_adress);
 }
 
-void _defragment_vas ()
+VA* _first_null_content_adress (VA* space, VA* starting_adress, VA* last_free_space_adress)
 {
-	VA* starting_adress = _vas;
-	size_t nulled_space_size = 0;
-	while (starting_adress != NULL)
-	{
-		nulled_space_size = _nulled_vspace_size(starting_adress);
-		_shift_vas_content_left(starting_adress, nulled_space_size);
-
-		starting_adress++;
-		starting_adress = _first_va_with_null_content(starting_adress);
-	}
-	_first_free_va = _first_va_with_null_content(_vas);
-}
-
-void _defragment_pas ()
-{
-	VA* starting_adress = _pas;
-	size_t nulled_space_size = 0;
-	while (starting_adress != NULL)
-	{
-		nulled_space_size = _nulled_pspace_size(starting_adress);
-		_shift_pas_content_left(starting_adress, nulled_space_size);
-
-		starting_adress++;
-		starting_adress = _first_pa_with_null_content(starting_adress);
-	}
-	_first_free_pa = _first_pa_with_null_content(_pas);
-}
-
-size_t _nulled_vspace_size (VA* starting_adress)
-{
-	if (starting_adress == NULL) starting_adress = _vas;
-
-	VA* adress = starting_adress;
-	size_t space_size = 0;
-	while (*adress == NULL)
-	{
-		space_size++;
-		adress++;
-	}
-
-	return space_size;
-}
-
-VA* _first_va_with_null_content (VA* starting_adress)
-{
-	if (starting_adress == NULL) starting_adress = _vas;
+	if (starting_adress == NULL) starting_adress = space;
 	VA* starting_adress_copy = starting_adress;
 
-	while (starting_adress_copy < _last_free_va)
+	while (starting_adress_copy <= last_free_space_adress)
 	{
 		if (*starting_adress_copy == NULL) return starting_adress_copy;
 		starting_adress_copy++;
@@ -217,12 +136,12 @@ VA* _first_va_with_null_content (VA* starting_adress)
 	return NULL;
 }
 
-void _shift_vas_content_left (VA* starting_adress, uint offset)
+void _shift_space_content_left (VA* starting_adress, VA* last_free_space_adress, uint offset)
 {
 	if (offset == 0) return;
 
 	VA* adress = starting_adress;
-	while (adress < _last_free_va - offset)
+	while (adress <= last_free_space_adress - offset)
 	{
 		*adress = *(adress + offset);
 		*(adress + offset) = NULL;
@@ -230,64 +149,41 @@ void _shift_vas_content_left (VA* starting_adress, uint offset)
 	}
 }
 
-void _shift_pas_content_left (VA* starting_adress, uint offset)
+int	_organize_space_for_segment_allocation (
+	VA* space,
+	VA** first_free_space_adress, 
+	VA* last_free_space_adress, 
+	size_t segment_size
+	)
 {
-	if (offset == 0) return;
+#define SIZE segment_size
+#define FIRST first_free_space_adress
+#define LAST last_free_space_adress
 
-	VA* adress = starting_adress;
-	while (adress < _last_free_pa - offset)
+	if (*FIRST + SIZE > LAST)
 	{
-		*adress = *(adress + offset);
-		*(adress + offset) = NULL;
-		adress++;
-	}
-}
-
-
-
-int	_organize_pspace_for_segment_allocation(size_t size)
-{
-	if (_first_free_pa + size > _last_free_pa)
-	{
-		_first_free_pa = _request_free_pspace(size);
-		if ((_first_free_pa == NULL) || _first_free_pa + size > _last_free_pa)
+		*first_free_space_adress = _request_free_space_region(space, last_free_space_adress, SIZE);
+		if ((*FIRST == NULL) ||
+			*FIRST + SIZE > LAST)
 		{
-			_defragment_pas();
-			if ((_first_free_pa == NULL) || _first_free_pa + size > _last_free_pa)
-			{
-				return _MEMORY_LACK;
-			}
+			*first_free_space_adress = _defragment_space(space, last_free_space_adress);
+
+			if ((*FIRST == NULL) ||
+				*FIRST + SIZE > LAST + 1) return _MEMORY_LACK;
 		}
 	}
 
 	return _SUCCESS;
+
+#undef SIZE
+#undef FIRST
+#undef LAST
 }
 
-int _organize_vspace_for_segment_allocation (size_t size)
+int	_init_adress (VA* adress, size_t content_size)
 {
-	if (_first_free_va + size > _last_free_va)
-	{
-		_first_free_va = _request_free_vspace(size);
-		if ((_first_free_va == NULL) || _first_free_va + size > _last_free_va)
-		{
-			_defragment_vas();
-			if ((_first_free_va == NULL) || _first_free_va + size > _last_free_va)
-			{
-				return _MEMORY_LACK;
-			}
-		}
-	}
-
-	return _SUCCESS;
-}
-
-int	_init_first_free_adress (size_t content_size)
-{
-	*_first_free_va = (VA)malloc(sizeof(VA) * content_size);
-	*_first_free_pa = (VA)malloc(sizeof(VA) * content_size);
-	if (*_first_free_va == NULL || *_first_free_pa == NULL) return _UNKNOWN_ERR;
-
-	return _SUCCESS;
+	*adress = (VA)malloc(sizeof(VA) * content_size);
+	return (*adress == NULL) ? _UNKNOWN_ERR : _SUCCESS;
 }
 
 int _allocate_segment (size_t size)
@@ -313,45 +209,21 @@ int	_register_segment (segment* segment)
 	return add_rec_return_code;
 }
 
-void _renew_first_free_adress (size_t prob_null_adress_offset)
-{
-#define OFFSET prob_null_adress_offset
-	if (*(_first_free_va + OFFSET) == NULL) _first_free_va += OFFSET;
-	else _first_free_va = _first_va_with_null_content(_vas);
 
-	if (*(_first_free_pa + OFFSET) == NULL) _first_free_pa += OFFSET;
-	else _first_free_pa = _first_pa_with_null_content(_pas);
-#undef OFFSET
-}
-
-
-void _print_vas()
+void _print_space (VA* space, size_t adress_offset_limit, const char* space_name)
 {
 	printf("\n -------------------------------\n");
-	printf("| Virtual adress space\t\t|");
+	printf("| "); 
+	printf(space_name);
+	printf("\t\t|");
 	printf("\n -------------------------------\n");
+
 	printf("| Adress\t| Content\t|");
 	printf("\n -------------------------------\n");
 
-	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
+	for (uint offset = 0; offset < adress_offset_limit; offset++)
 	{
-		printf("| %p\t| %c\t\t|\n", *(_vas + adress_offset), _vas[adress_offset] == NULL ? ' ' : *_vas[adress_offset]);
-	}
-
-	printf(" -------------------------------\n");
-}
-
-void _print_pas()
-{
-	printf("\n -------------------------------\n");
-	printf("| Physical adress space\t\t|");
-	printf("\n -------------------------------\n");
-	printf("| Adress\t| Content\t|");
-	printf("\n -------------------------------\n");
-
-	for (uint adress_offset = 0; adress_offset < _pas_size; adress_offset++)
-	{
-		printf("| %p\t| %c\t\t|\n", *(_pas + adress_offset), _pas[adress_offset] == NULL ? ' ' : *_pas[adress_offset]);
+		printf("%p| %p\t| %c\t\t|\n", space + offset, *(space + offset), space[offset] == NULL ? ' ' : *space[offset]);
 	}
 
 	printf(" -------------------------------\n");

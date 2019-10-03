@@ -13,11 +13,11 @@ int main ()
 	test_init(szPage, n);
 
 	VA s1 = NULL;
-	size_t size = 2;
+	size_t size = 1;
 	test_malloc(&s1, size);
 
 	VA s2 = NULL;
-	size = 1;
+	size = 2;
 	test_malloc(&s2, size);
 
 	VA s3 = NULL;
@@ -25,23 +25,18 @@ int main ()
 	test_malloc(&s3, size);
 
 	test_free(s2);
-
-	VA s4 = NULL;
-	size = 44;
-	test_malloc(&s4, size);
-
-	test_free(s4);
+	_print_space(_vas, 10, "Virtual adress space");
 
 	VA s5 = NULL;
-	size = 12;
+	size = 230;
 	test_malloc(&s5, size);
+	_print_space(_vas, _vas_size, "Virtual adress space");
 
 	VA s6 = NULL;
-	size = 231;
+	size = 266;
 	test_malloc(&s6, size);
+	_print_space(_vas, _vas_size, "Virtual adress space");
 
-	_print_vas();
-	_print_pas();
 	_print_segment_table();
 
 	return 0;

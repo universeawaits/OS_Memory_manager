@@ -47,49 +47,56 @@ VA*			_first_free_va;				// Первый свободный виртуальный адрес
 VA*			_last_free_pa;				// Последний свободный физический адрес 
 VA*			_last_free_va;				// Последний свободный виртуальный адрес 
 
-int			_init_pas (size_t size);
-uint		_validate_pa(VA va);
-void		_load_into_mem (segment* segment);
+int			_init_pas(size_t size);
+int			_init_vas(size_t size);
+
 void		_unload_from_mem (segment* segment);
 void		_load_adjacent_segments_into_mem (segment* central_segment);
-VA*			_request_free_pspace (size_t size);
-void		_defragment_pas ();
-size_t		_nulled_pspace_size (VA* starting_adress);
-VA*			_first_pa_with_null_content (VA* starting_adress);
-void		_shift_pas_content_left (VA* starting_adress, uint offset);
 
-int			_init_vas (size_t size);
-uint		_validate_va (VA va);
+
+uint		_adress_abs_offset (VA* space, VA adress);
 segment*	_find_segment (VA starting_va);
-VA*			_request_free_vspace (size_t size);
-void		_defragment_vas ();
-size_t		_nulled_vspace_size (VA* starting_adress);
-VA*			_first_va_with_null_content (VA* starting_adress);
-void		_shift_vas_content_left (VA* starting_adress, uint offset);
 
-void		_print_vas();
-void		_print_pas();
+
+VA*			_defragment_space(VA* space, VA* last_free_space_adress);
+void		_shift_space_content_left	(
+										VA*		starting_adress, 
+										VA*		last_free_space_adress, 
+										uint	offset
+										);
+
+VA*			_request_free_space_region	(
+										VA*		space,
+										VA*		last_free_space_adress,
+										size_t	size
+										);
+
+size_t		_nulled_space_region_size (VA* space, VA* space_region);
+void		_print_space(VA* space, size_t adress_offset_limit, const char* space_name);
+
+
+
+
+
+
 
 /**
 	@func	_organize_space_for_segment_allocation
-	@brief	Поиск места или дефрагментация физ. адр. прост-ва
+	@brief	Поиск места или дефрагментация адр. пространства
 **/
-int	_organize_pspace_for_segment_allocation(size_t size);
-
-
-
-/**
-	@func	_organize_space_for_segment_allocation
-	@brief	Поиск места или дефрагментация вирт. адр. прост-ва
-**/
-int	_organize_vspace_for_segment_allocation (size_t size);
+int	_organize_space_for_segment_allocation(
+	VA* space,
+	VA* first_free_space_adress, 
+	VA* last_free_space_adress, 
+	size_t segment_size
+	);
 
 /**
 	@func	_init_first_free_adress
 	@brief	Инициализация пустого адреса, который будет 
 			являться начальным адресом сегмента
 **/
-int	_init_first_free_adress (size_t content_size);
+int	_init_adress (VA* adress, size_t content_size);
 
 /**
 	@func	_allocate_segment
@@ -109,6 +116,10 @@ int	_register_segment (segment* segment);
 	@func	_renew_first_free_adress
 	@brief	Получение адреса первой свободной ячейки
 **/
-void _renew_first_free_adress (size_t prob_null_adress_offset);
+VA* _first_null_content_adress(
+	VA* space,
+	VA* starting_adress,
+	VA* last_free_space_adress
+	);
 
 #endif // !ADRESS_SPACES_H

@@ -8,13 +8,18 @@
 
 int _malloc (VA* ptr, size_t szBlock)
 {
-	if (szBlock == 0 || ptr == NULL) return _WRONG_PARAMS;
+	if (szBlock <= 0 || (szBlock >= _pas_size - _PAS_MIN_SIZE) || ptr == NULL)
+	{
+		return _WRONG_PARAMS;
+	}
 	
 	int return_code = 0;
-	return_code = _organize_vspace_for_segment_allocation(szBlock);
+	return_code		= _organize_space_for_segment_allocation (
+		_vas, &_first_free_va, _last_free_va, szBlock
+		);
 	if (return_code != _SUCCESS) return return_code;
 
-	return_code = _init_first_free_adress(szBlock);
+	return_code = _init_adress (_first_free_va, szBlock);
 	if (return_code != _SUCCESS) return return_code;
 
 	return_code = _allocate_segment(szBlock);
@@ -31,7 +36,14 @@ int _malloc (VA* ptr, size_t szBlock)
 	return_code = _register_segment(new_segment);
 	if (return_code != _SUCCESS) return return_code;
 
-	_renew_first_free_adress(szBlock);
+	if (*(_first_free_va + szBlock) == NULL)
+	{
+		_first_free_va += szBlock;
+	}
+	else
+	{
+		_first_free_va = _first_null_content_adress(_vas, _vas, _last_free_va);
+	}
 
 	return _SUCCESS;
 }
@@ -50,7 +62,7 @@ int _free (VA ptr)
 	}
 
 	// Избыточно?
-	uint segment_starting_adress_offset = _validate_va(found_segment->starting_va);
+	uint segment_starting_adress_offset = _adress_abs_offset(_vas, found_segment->starting_va);
 	if (segment_starting_adress_offset == _FORBIDDEN_ADRESS_OFFSET)
 	{
 		return _UNKNOWN_ERR;
