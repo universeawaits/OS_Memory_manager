@@ -15,8 +15,6 @@
 #ifndef ADRESS_SPACES_H
 #define ADRESS_SPACES_H
 
-// Тип, описывающий физический адрес
-typedef char* PA;
 // Сокращение для unsigned int (не size_t!)
 typedef unsigned int uint;
 
@@ -24,7 +22,7 @@ typedef unsigned int uint;
 typedef struct
 {
 	VA		starting_va;
-	PA		starting_pa;
+	VA		starting_pa;
 	size_t	size;
 }
 segment;
@@ -37,28 +35,28 @@ segment;
 #define _VAS_MAX_SIZE _PAS_MAX_SIZE		// Максимальный размер виртуального адресного пространства (в байтах)
 #define _FORBIDDEN_ADRESS_OFFSET -1		// Адрес вне выделенного адресного пространсва
 
-PA*			_pas;						// Физическое адресное пространство
+VA*			_pas;						// Физическое адресное пространство
 VA*			_vas;						// Виртуальное адресное пространство
 
 size_t		_pas_size;					// Текущий размер физического адресного пространства
 size_t		_vas_size;					// Текущий размер виртуального адресного пространства
 
-PA*			_first_free_pa;				// Первый свободный физический адрес 
+VA*			_first_free_pa;				// Первый свободный физический адрес 
 VA*			_first_free_va;				// Первый свободный виртуальный адрес 
 
-PA*			_last_free_pa;				// Последний свободный физический адрес 
+VA*			_last_free_pa;				// Последний свободный физический адрес 
 VA*			_last_free_va;				// Последний свободный виртуальный адрес 
 
 int			_init_pas (size_t size);
-uint		_validate_pa(PA va);
+uint		_validate_pa(VA va);
 void		_load_into_mem (segment* segment);
 void		_unload_from_mem (segment* segment);
 void		_load_adjacent_segments_into_mem (segment* central_segment);
-PA*			_request_free_pspace (size_t size);
+VA*			_request_free_pspace (size_t size);
 void		_defragment_pas ();
-size_t		_nulled_pspace_size (PA* starting_adress);
-PA*			_first_pa_with_null_content (PA* starting_adress);
-void		_shift_pas_content_left (PA* starting_adress, uint offset);
+size_t		_nulled_pspace_size (VA* starting_adress);
+VA*			_first_pa_with_null_content (VA* starting_adress);
+void		_shift_pas_content_left (VA* starting_adress, uint offset);
 
 int			_init_vas (size_t size);
 uint		_validate_va (VA va);
