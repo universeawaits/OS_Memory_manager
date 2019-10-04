@@ -46,7 +46,7 @@ int _free (VA ptr)
 {
 	if (ptr == NULL) return _WRONG_PARAMS;
 
-	segment* found_segment = _find_segment(ptr);
+	segment* found_segment = _find_segment_by_starting_adress(ptr);
 	if (found_segment == NULL) return _WRONG_PARAMS;
 
 	_clear_space_region(
@@ -71,6 +71,16 @@ int _read(VA ptr, void* pBuffer, size_t szBuffer)
 
 	segment* owner = _find_segment_by_inner_adress (ptr, szBuffer);
 	if (owner == NULL) return _WRONG_PARAMS;
+
+	int return_code = 0;
+	if (_find_record(owner)->is_loaded == false)
+	{
+		return_code = _load_segment(owner);
+		if (return_code != _SUCCESS) return return_code;
+	}
+
+	return_code = _load_adjacent_segments(owner);
+	if (return_code != _SUCCESS) return return_code;
 
 	memcpy(pBuffer, ptr, szBuffer);
 

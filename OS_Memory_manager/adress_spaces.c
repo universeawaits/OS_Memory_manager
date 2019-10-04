@@ -86,10 +86,37 @@ size_t _nulled_space_region_size (VA* space, VA* space_region)
 	return space_size;
 }
 
+int _load_segment (segment* segment)
+{
+	int return_code = 0;
+	return_code = _organize_space_for_segment_allocation(
+		_pas, &_first_free_pa, _last_free_pa, segment->size
+	);
+	if (return_code == _MEMORY_LACK)
+	{
+		return_code = _unload_segments_to_free_space(segment->size);
+		if (return_code != _SUCCESS) return return_code;
+	}
+
+	return_code = _init_adress(_first_free_pa, segment->size);
+	if (return_code != _SUCCESS) return return_code;
+
+	return_code = _allocate_segment(_first_free_pa, segment->size);
+	if (return_code != _SUCCESS) return return_code;
+
+	segment->starting_pa = *_first_free_pa;
+	_change_loading_mark(segment, true);
+
+	if (*(_first_free_pa + segment->size) == NULL) _first_free_pa += segment->size;
+	else _first_free_pa = _first_null_content_adress(_pas, _pas, _last_free_pa);
+
+	return _SUCCESS;
+}
+
 void _unload_segment (segment* segment)
 {
-	_clear_space_region(&segment->starting_pa, segment->size);
-	_mark_as_unloaded(segment);
+	_clear_space_region (&segment->starting_pa, segment->size);
+	_change_loading_mark (segment, false);
 }
 
 void _clear_space_region (VA* starting_adress, size_t size)
@@ -104,9 +131,47 @@ void _clear_space_region (VA* starting_adress, size_t size)
 	}
 }
 
-void _load_adjacent_segments_into_mem (segment* central_segment)
+int _load_adjacent_segments (segment* central_segment)
 {
+	if (central_segment->starting_va != *_vas)
+	{
+		VA* left_adj_seg = _vas + _adress_abs_offset(
+			_vas,
+			central_segment->starting_va // убрать +1?
+		) - 1;; 
+		while (*left_adj_seg == NULL)
+		{
+			left_adj_seg--;
+		}
+		if (++left_adj_seg != _vas)
+		{
+			segment* left_seg = _find_segment_by_inner_adress(*left_adj_seg, 0);
+			if (left_seg == NULL) return _UNKNOWN_ERR;
 
+			if (_find_record(left_seg)->is_loaded == false) _load_segment(left_seg);
+		}
+	}
+
+	if (central_segment->starting_va + central_segment->size != *_last_free_va) 
+	{
+		VA* right_adj_seg = _vas + _adress_abs_offset(
+			_vas,
+			central_segment->starting_va 
+			) + central_segment->size;
+		while (*right_adj_seg == NULL)
+		{
+			right_adj_seg++;
+		}
+		if (--right_adj_seg != _last_free_va)
+		{
+			segment* right_seg = _find_segment_by_inner_adress(*right_adj_seg, 0);
+			if (right_seg == NULL) return _UNKNOWN_ERR;
+
+			if (_find_record(right_seg)->is_loaded == false) _load_segment(right_seg);
+		}		
+	}
+
+	return _SUCCESS;
 }
 
 VA* _defragment_space (VA* space, VA* last_free_space_adress)
@@ -167,6 +232,7 @@ int	_organize_space_for_segment_allocation (
 	if (*FIRST + SIZE > LAST)
 	{
 		*first_free_space_adress = _request_free_space_region(space, last_free_space_adress, SIZE);
+		
 		if ((*FIRST == NULL) ||
 			*FIRST + SIZE > LAST)
 		{
@@ -182,6 +248,34 @@ int	_organize_space_for_segment_allocation (
 #undef SIZE
 #undef FIRST
 #undef LAST
+}
+
+int _unload_segments_to_free_space (size_t space_region_size)
+{
+	while (_count_of_loaded_segments > 0)
+	{
+		_unload_random_segment();
+		*_first_free_pa = _defragment_space(_pas, _last_free_pa);
+
+		*_first_free_pa = _request_free_space_region(_pas, _last_free_pa, space_region_size);
+		if (*_first_free_pa != NULL)
+		{
+			return _SUCCESS;
+		}
+	}
+
+	return _MEMORY_LACK;
+}
+
+void _unload_random_segment ()
+{
+	for (uint rec_index = 0; rec_index < _ST_MAX_RECORDS_COUNT; rec_index++)
+	{
+		if (_segment_table->records[rec_index].is_loaded == true)
+		{
+			_unload_segment(_segment_table->records[rec_index].segment_ptr);
+		}
+	}
 }
 
 int	_init_adress (VA* adress, size_t content_size)
@@ -211,7 +305,6 @@ int	_register_segment (segment* segment)
 	return add_rec_return_code;
 }
 
-
 void _print_space (VA* space, size_t adress_offset_limit, const char* space_name)
 {
 	printf("\n -------------------------------\n");
@@ -225,7 +318,7 @@ void _print_space (VA* space, size_t adress_offset_limit, const char* space_name
 
 	for (uint offset = 0; offset < adress_offset_limit; offset++)
 	{
-		printf("%p| %p\t| %c\t\t|\n", space + offset, *(space + offset), space[offset] == NULL ? ' ' : *space[offset]);
+		printf("| %p\t| %c\t\t|\n", *(space + offset), space[offset] == NULL ? ' ' : *space[offset]);
 	}
 
 	printf(" -------------------------------\n");

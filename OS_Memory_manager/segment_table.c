@@ -19,6 +19,7 @@ int _init_segment_table ()
 		_segment_table->records[rec_index].is_loaded = false;
 		_segment_table->records[rec_index].segment_ptr = NULL;
 	}
+	_count_of_loaded_segments = 0;
 
 	return _SUCCESS;
 }
@@ -77,7 +78,7 @@ void _clear_segment_table_record (uint index)
 	record->is_loaded	= false;
 }
 
-segment* _find_segment (VA segment_starting_va)
+segment* _find_segment_by_starting_adress (VA segment_starting_va)
 {
 	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++)
 	{
@@ -99,7 +100,7 @@ segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_s
 		seg_starting_adress = _segment_table->records[record_index].segment_ptr->starting_va;
 		if (seg_starting_adress == inner_adress)
 		{
-			if (segment_region_size <= segment_region_size) // <= ?
+			if (segment_region_size <= _segment_table->records[record_index].segment_ptr->size) // <= ?
 			{
 				return _segment_table->records[record_index].segment_ptr;
 			}
@@ -139,12 +140,13 @@ st_record* _find_record (segment* segment)
 	return NULL;
 }
 
-void _mark_as_unloaded (segment* segment)
+void _change_loading_mark (segment* segment, bool is_loaded)
 {
 	st_record* found_rec = _find_record(segment);
-	found_rec->is_loaded = false;
-}
+	found_rec->is_loaded = is_loaded;
 
+	_count_of_loaded_segments += is_loaded ? 1 : -1;
+}
 
 void _print_segment_table()
 {
