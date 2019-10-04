@@ -50,7 +50,7 @@ VA*			_last_free_va;				// Последний свободный виртуальный адрес
 int			_init_pas(size_t size);
 int			_init_vas(size_t size);
 
-void		_unload_from_mem (segment* segment);
+void		_unload_segment (segment* segment);
 void		_load_adjacent_segments_into_mem (segment* central_segment);
 
 
@@ -58,22 +58,23 @@ uint		_adress_abs_offset (VA* space, VA adress);
 segment*	_find_segment (VA starting_va);
 
 
-VA*			_defragment_space(VA* space, VA* last_free_space_adress);
+VA*	_defragment_space(VA* space, VA* last_free_space_adress);
+void _clear_space_region(VA* starting_adress, size_t size);
 
 /*
 	@func	_shift_space_content_left
 	@brief	Сдвиг содержимого адресов пространства влево
 */
 void _shift_space_content_left	(
-	VA*		starting_adress, 
-	VA*		last_free_space_adress, 
-	uint	offset
+	VA*	starting_adress, 
+	VA*	last_free_space_adress, 
+	uint offset
 	);
 
 VA*	_request_free_space_region	(
-	VA*		space,
-	VA*		last_free_space_adress,
-	size_t	size
+	VA* space,
+	VA*	last_free_space_adress,
+	size_t size
 	);
 
 size_t _nulled_space_region_size (VA* space, VA* space_region);

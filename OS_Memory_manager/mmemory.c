@@ -44,33 +44,13 @@ int _malloc (VA* ptr, size_t szBlock)
 
 int _free (VA ptr)
 {
-	if (ptr == NULL)
-	{
-		return _WRONG_PARAMS;
-	}
+	if (ptr == NULL) return _WRONG_PARAMS;
 
 	segment* found_segment = _find_segment(ptr);
-	if (found_segment == NULL)
-	{
-		return _WRONG_PARAMS;
-	}
+	if (found_segment == NULL) return _WRONG_PARAMS;
 
-	// Избыточно?
-	uint segment_starting_adress_offset = _adress_abs_offset(_vas, found_segment->starting_va);
-	if (segment_starting_adress_offset == _FORBIDDEN_ADRESS_OFFSET)
-	{
-		return _UNKNOWN_ERR;
-	}
-
-	uint adress_offset = 0;
-	while (adress_offset < found_segment->size)
-	{
-		*(_vas + segment_starting_adress_offset + adress_offset) = NULL;
-		adress_offset++;
-	}
-	//ptr = NULL;
-
-	_unload_from_mem(found_segment);
+	_clear_space_region(found_segment->starting_pa, found_segment->size);
+	_clear_space_region(found_segment->starting_va, found_segment->size);
 	_remove_record_from_segment_table(found_segment);
 
 	return _SUCCESS;

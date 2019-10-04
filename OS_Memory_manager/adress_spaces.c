@@ -86,17 +86,22 @@ size_t _nulled_space_region_size (VA* space, VA* space_region)
 	return space_size;
 }
 
-void _unload_from_mem (segment* segment)
+void _unload_segment (segment* segment)
 {
+	_clear_space_region(segment->starting_pa, segment->size);
+	_mark_as_unloaded(segment);
+}
+
+void _clear_space_region (VA* starting_adress, size_t size)
+{
+	if (starting_adress == NULL || *starting_adress == NULL) return;
+
 	uint curr_adress_offset = 0;
-	VA* starting_adress_ptr = _pas + _adress_abs_offset(_pas, segment->starting_pa);
-	while (curr_adress_offset < sizeof(char) * segment->size)
+	while (curr_adress_offset < sizeof(**(starting_adress)) * size)
 	{
-		*(starting_adress_ptr + curr_adress_offset) = NULL;
+		*(starting_adress + curr_adress_offset) = NULL;
 		curr_adress_offset++;
 	}
-
-	_mark_as_unloaded(segment);
 }
 
 void _load_adjacent_segments_into_mem (segment* central_segment)
