@@ -49,8 +49,14 @@ int _free (VA ptr)
 	segment* found_segment = _find_segment(ptr);
 	if (found_segment == NULL) return _WRONG_PARAMS;
 
-	_clear_space_region(found_segment->starting_pa, found_segment->size);
-	_clear_space_region(found_segment->starting_va, found_segment->size);
+	_clear_space_region(
+		_pas + _adress_abs_offset(_pas, found_segment->starting_pa), 
+		found_segment->size
+		);
+	_clear_space_region(
+		_vas + _adress_abs_offset(_vas, found_segment->starting_va),
+		found_segment->size
+		);
 	_remove_record_from_segment_table(found_segment);
 
 	return _SUCCESS;

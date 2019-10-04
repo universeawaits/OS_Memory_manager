@@ -37,7 +37,7 @@ int main ()
 	_print_space(_vas, _vas_size, "Virtual adress space");
 
 	VA s6 = NULL;
-	size = 266;
+	size = 265;
 	test_malloc(&s6, size);
 	_print_space(_vas, _vas_size, "Virtual adress space");
 
