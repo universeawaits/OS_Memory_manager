@@ -88,7 +88,7 @@ size_t _nulled_space_region_size (VA* space, VA* space_region)
 
 void _unload_segment (segment* segment)
 {
-	_clear_space_region(segment->starting_pa, segment->size);
+	_clear_space_region(&segment->starting_pa, segment->size);
 	_mark_as_unloaded(segment);
 }
 
@@ -123,7 +123,6 @@ VA* _defragment_space (VA* space, VA* last_free_space_adress)
 			space, starting_adress, last_free_space_adress
 			);
 	}
-	_print_space(_vas, _vas_size, "v");
 	return _first_null_content_adress(space, space, last_free_space_adress);
 }
 

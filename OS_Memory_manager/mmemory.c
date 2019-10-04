@@ -64,6 +64,15 @@ int _free (VA ptr)
 
 int _read(VA ptr, void* pBuffer, size_t szBuffer) 
 {
+	if (ptr == NULL || szBuffer <= 0) return _WRONG_PARAMS;
+
+	uint ptr_offset = _adress_abs_offset(_vas, ptr);
+	if (ptr_offset == _FORBIDDEN_ADRESS_OFFSET) return _WRONG_PARAMS;
+
+	segment* owner = _find_segment_by_inner_adress (ptr, szBuffer);
+	if (owner == NULL) return _WRONG_PARAMS;
+
+	memcpy(pBuffer, ptr, szBuffer);
 
 	return _SUCCESS;
 }

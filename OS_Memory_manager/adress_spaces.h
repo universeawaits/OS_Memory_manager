@@ -54,9 +54,7 @@ void		_unload_segment (segment* segment);
 void		_load_adjacent_segments_into_mem (segment* central_segment);
 
 
-uint		_adress_abs_offset (VA* space, VA adress);
-segment*	_find_segment (VA starting_va);
-
+uint _adress_abs_offset (VA* space, VA adress);
 
 VA*	_defragment_space(VA* space, VA* last_free_space_adress);
 void _clear_space_region(VA* starting_adress, size_t size);

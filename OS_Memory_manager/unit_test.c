@@ -20,3 +20,9 @@ void test_free (VA segment_starting_va)
 	int free_return_code = _free(segment_starting_va);
 	assert(free_return_code == _SUCCESS);
 }
+
+void test_read (VA ptr, void* pBuffer, size_t szBuffer)
+{
+	int read_return_code = _read(ptr, pBuffer, szBuffer);
+	assert(read_return_code == _SUCCESS);
+}
