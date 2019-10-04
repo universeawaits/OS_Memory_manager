@@ -22,7 +22,7 @@ int _malloc (VA* ptr, size_t szBlock)
 	return_code = _init_adress (_first_free_va, szBlock);
 	if (return_code != _SUCCESS) return return_code;
 
-	return_code = _allocate_segment(szBlock);
+	return_code = _allocate_segment (_first_free_va, szBlock);
 	if (return_code != _SUCCESS) return return_code;
 	 
 	*ptr = *_first_free_va;
@@ -36,14 +36,8 @@ int _malloc (VA* ptr, size_t szBlock)
 	return_code = _register_segment(new_segment);
 	if (return_code != _SUCCESS) return return_code;
 
-	if (*(_first_free_va + szBlock) == NULL)
-	{
-		_first_free_va += szBlock;
-	}
-	else
-	{
-		_first_free_va = _first_null_content_adress(_vas, _vas, _last_free_va);
-	}
+	if (*(_first_free_va + szBlock) == NULL) _first_free_va += szBlock;
+	else _first_free_va = _first_null_content_adress(_vas, _vas, _last_free_va);
 
 	return _SUCCESS;
 }

@@ -11,18 +11,22 @@ int main ()
 	size_t szPage = 5;
 	uint n = 100;
 	test_init(szPage, n);
+	_print_space(_vas, 10, "Virtual adress space");
 
 	VA s1 = NULL;
 	size_t size = 1;
 	test_malloc(&s1, size);
+	_print_space(_vas, 10, "Virtual adress space");
 
 	VA s2 = NULL;
 	size = 2;
 	test_malloc(&s2, size);
+	_print_space(_vas, 10, "Virtual adress space");
 
 	VA s3 = NULL;
 	size = 3;
 	test_malloc(&s3, size);
+	_print_space(_vas, 10, "Virtual adress space");
 
 	test_free(s2);
 	_print_space(_vas, 10, "Virtual adress space");

@@ -37,7 +37,7 @@ int _add_record_to_segment_table (segment* segment)
 		return _MEMORY_LACK;
 	}
 
-	_segment_table->records[_segment_table->first_free_index].is_loaded = true;
+	_segment_table->records[_segment_table->first_free_index].is_loaded = false;
 	_segment_table->records[_segment_table->first_free_index].segment_ptr = segment;
 
 	_segment_table->first_free_index++;

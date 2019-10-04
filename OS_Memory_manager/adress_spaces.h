@@ -59,25 +59,25 @@ segment*	_find_segment (VA starting_va);
 
 
 VA*			_defragment_space(VA* space, VA* last_free_space_adress);
-void		_shift_space_content_left	(
-										VA*		starting_adress, 
-										VA*		last_free_space_adress, 
-										uint	offset
-										);
 
-VA*			_request_free_space_region	(
-										VA*		space,
-										VA*		last_free_space_adress,
-										size_t	size
-										);
+/*
+	@func	_shift_space_content_left
+	@brief	Сдвиг содержимого адресов пространства влево
+*/
+void _shift_space_content_left	(
+	VA*		starting_adress, 
+	VA*		last_free_space_adress, 
+	uint	offset
+	);
 
-size_t		_nulled_space_region_size (VA* space, VA* space_region);
-void		_print_space(VA* space, size_t adress_offset_limit, const char* space_name);
+VA*	_request_free_space_region	(
+	VA*		space,
+	VA*		last_free_space_adress,
+	size_t	size
+	);
 
-
-
-
-
+size_t _nulled_space_region_size (VA* space, VA* space_region);
+void _print_space(VA* space, size_t adress_offset_limit, const char* space_name);
 
 
 /**
@@ -86,7 +86,7 @@ void		_print_space(VA* space, size_t adress_offset_limit, const char* space_name
 **/
 int	_organize_space_for_segment_allocation(
 	VA* space,
-	VA* first_free_space_adress, 
+	VA** first_free_space_adress, 
 	VA* last_free_space_adress, 
 	size_t segment_size
 	);
@@ -100,10 +100,9 @@ int	_init_adress (VA* adress, size_t content_size);
 
 /**
 	@func	_allocate_segment
-	@brief	Размещение сегмента в вирт. и физ. 
-			адресных пространствах
+	@brief	Размещение сегмента в адресном пространстве
 **/
-int	_allocate_segment (size_t size);
+int	_allocate_segment (VA* allocationg_adress, size_t size);
 
 /**
 	@func	_register_segment

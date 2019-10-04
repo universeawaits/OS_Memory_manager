@@ -186,17 +186,15 @@ int	_init_adress (VA* adress, size_t content_size)
 	return (*adress == NULL) ? _UNKNOWN_ERR : _SUCCESS;
 }
 
-int _allocate_segment (size_t size)
+int _allocate_segment (VA* allocating_adress, size_t size)
 {
 	VA vsegment_space = (VA)malloc(sizeof(char) * size);
-	VA psegment_space = (VA)malloc(sizeof(char) * size);
-	if (vsegment_space == NULL || psegment_space == NULL) return _UNKNOWN_ERR;
+	if (vsegment_space == NULL) return _UNKNOWN_ERR;
 
 	uint curr_adress_offset = 0;
 	while (curr_adress_offset < size)
 	{
-		*(_first_free_va + curr_adress_offset) = vsegment_space + curr_adress_offset;
-		*(_first_free_pa + curr_adress_offset) = psegment_space + curr_adress_offset;
+		*(allocating_adress + curr_adress_offset) = vsegment_space + curr_adress_offset;
 		curr_adress_offset++;
 	}
 
