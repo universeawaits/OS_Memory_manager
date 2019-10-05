@@ -32,3 +32,26 @@ void test_write (VA ptr, void* pBuffer, size_t szBuffer)
 	int write_return_code = _write(ptr, pBuffer, szBuffer);
 	assert(write_return_code == _SUCCESS);
 }
+
+void test_init__success ()
+{
+	int szPage	= 50;
+	int n		= 10;
+
+	int init_return_code = _init(n, szPage);
+	assert(init_return_code == _SUCCESS);
+}
+
+void test_init__wrong_params ()
+{
+	int szPage = 1024;
+	int n = 11;
+
+	int init_return_code = _init(n, szPage);
+	assert(init_return_code == _WRONG_PARAMS);
+}
+
+void test_init__unknown_err ()
+{
+
+}
