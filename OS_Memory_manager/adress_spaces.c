@@ -53,6 +53,27 @@ uint _adress_abs_offset (VA* space, VA adress)
 	return _FORBIDDEN_ADRESS_OFFSET;
 }
 
+int _request_space_region_access (VA adress, size_t region_size)
+{
+	uint adress_offset = _adress_abs_offset(_vas, adress);
+	if (adress_offset == _FORBIDDEN_ADRESS_OFFSET) return _WRONG_PARAMS;
+
+	segment* owner = _find_segment_by_inner_adress (adress, region_size);
+	if (owner == NULL) return _WRONG_PARAMS;
+
+	int return_code = 0;
+	if (_find_record(owner)->is_loaded == false)
+	{
+		return_code = _load_segment(owner);
+		if (return_code != _SUCCESS) return return_code;
+	}
+
+	return_code = _load_adjacent_segments(owner);
+	if (return_code != _SUCCESS) return return_code;
+
+	return _SUCCESS;
+}
+
 VA*	_request_free_space_region (VA* space, VA* last_free_space_adress, size_t size)
 {
 	if (size == 0) return space;
