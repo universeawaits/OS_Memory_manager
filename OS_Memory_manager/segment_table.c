@@ -91,12 +91,19 @@ segment* _find_segment_by_starting_adress (VA segment_starting_va)
 	return NULL;
 }
 
+// TODO: разделить фукнционал!!!
 segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_size)
 {
 	VA seg_starting_adress = NULL;
+	size_t segment_region_size_copy = segment_region_size;
 	uint segment_adress_offset = 0;
 	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++)
 	{
+		if (segment_region_size_copy == 0)
+		{
+			segment_region_size_copy = _segment_table->records[record_index].segment_ptr->size;
+		}
+
 		seg_starting_adress = _segment_table->records[record_index].segment_ptr->starting_va;
 		if (seg_starting_adress == inner_adress)
 		{
@@ -109,11 +116,11 @@ segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_s
 		else
 		{
 			segment_adress_offset = 0;
-			while (segment_adress_offset < segment_region_size)
+			while (segment_adress_offset < segment_region_size_copy)
 			{
 				if (seg_starting_adress + segment_adress_offset == inner_adress)
 				{
-					if (segment_region_size < _segment_table->records[record_index].segment_ptr->size) // <= ?
+					if (segment_region_size_copy <= _segment_table->records[record_index].segment_ptr->size) // <= ?
 					{
 						return _segment_table->records[record_index].segment_ptr;
 					}
@@ -122,6 +129,8 @@ segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_s
 				segment_adress_offset++;
 			}
 		}
+
+		segment_region_size_copy = segment_region_size;
 	}
 
 	return NULL; // Чем может быть вызвано (извне) попадание сюда??

@@ -138,12 +138,12 @@ int _load_adjacent_segments (segment* central_segment)
 		VA* left_adj_seg = _vas + _adress_abs_offset(
 			_vas,
 			central_segment->starting_va // убрать +1?
-		) - 1;; 
+			) - 1;
 		while (*left_adj_seg == NULL)
 		{
 			left_adj_seg--;
 		}
-		if (++left_adj_seg != _vas)
+		if (left_adj_seg + 1 != _vas)
 		{
 			segment* left_seg = _find_segment_by_inner_adress(*left_adj_seg, 0);
 			if (left_seg == NULL) return _UNKNOWN_ERR;
@@ -162,7 +162,7 @@ int _load_adjacent_segments (segment* central_segment)
 		{
 			right_adj_seg++;
 		}
-		if (--right_adj_seg != _last_free_va)
+		if (right_adj_seg - 1 != _last_free_va)
 		{
 			segment* right_seg = _find_segment_by_inner_adress(*right_adj_seg, 0);
 			if (right_seg == NULL) return _UNKNOWN_ERR;
