@@ -46,8 +46,14 @@ VA*			_first_free_va;				// Первый свободный виртуальный адрес
 VA*			_last_free_pa;				// Последний свободный физический адрес 
 VA*			_last_free_va;				// Последний свободный виртуальный адрес 
 
+
 int	_init_pas (size_t size);
+
 int	_init_vas (size_t size);
+
+uint _adress_abs_offset(VA* space, VA adress);
+
+int _request_space_region_access (VA adress, size_t region_size);
 
 void _unload_segment (segment* segment);
 
@@ -59,7 +65,6 @@ int _load_adjacent_segments (segment* central_segment);
 
 int _unload_segments_to_free_space (size_t space_region_size);
 
-uint _adress_abs_offset (VA* space, VA adress);
 
 VA*	_defragment_space (VA* space, VA* last_free_space_adress);
 
