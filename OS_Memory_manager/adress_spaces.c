@@ -43,7 +43,13 @@ int _init_vas (size_t size)
 	return _SUCCESS;
 }
 
-uint _adress_abs_offset (VA* space, VA adress)
+int	_init_adress(VA* adress, size_t content_size)
+{
+	*adress = (VA)malloc(sizeof(VA) * content_size);
+	return (*adress == NULL) ? _UNKNOWN_ERR : _SUCCESS;
+}
+
+uint _adress_abs_offset(VA* space, VA adress)
 {
 	for (uint adress_offset = 0; adress_offset < _vas_size; adress_offset++)
 	{
@@ -53,12 +59,53 @@ uint _adress_abs_offset (VA* space, VA adress)
 	return _FORBIDDEN_ADRESS_OFFSET;
 }
 
-int _request_space_region_access (VA adress, size_t region_size)
+void _clear_space_region(VA* starting_adress, size_t size)
+{
+	if (starting_adress == NULL || *starting_adress == NULL) return;
+
+	uint curr_adress_offset = 0;
+	while (curr_adress_offset < sizeof(**(starting_adress)) * size)
+	{
+		*(starting_adress + curr_adress_offset) = NULL;
+		curr_adress_offset++;
+	}
+}
+
+VA* _first_null_content_adress(VA* space, VA* starting_adress, VA* last_free_space_adress)
+{
+	if (starting_adress == NULL) starting_adress = space;
+	VA* starting_adress_copy = starting_adress;
+
+	while (starting_adress_copy <= last_free_space_adress)
+	{
+		if (*starting_adress_copy == NULL) return starting_adress_copy;
+		starting_adress_copy++;
+	}
+
+	return NULL;
+}
+
+size_t _nulled_space_region_size(VA* space, VA* space_region)
+{
+	if (space_region == NULL) space_region = space;
+
+	VA* adress = space_region;
+	size_t space_size = 0;
+	while (*adress == NULL)
+	{
+		space_size++;
+		adress++;
+	}
+
+	return space_size;
+}
+
+int _request_space_region_access(VA adress, size_t region_size)
 {
 	uint adress_offset = _adress_abs_offset(_vas, adress);
 	if (adress_offset == _FORBIDDEN_ADRESS_OFFSET) return _WRONG_PARAMS;
 
-	segment* owner = _find_segment_by_inner_adress (adress, region_size);
+	segment* owner = _find_segment_by_inner_adress(adress, region_size);
 	if (owner == NULL) return _WRONG_PARAMS;
 
 	int return_code = 0;
@@ -74,7 +121,37 @@ int _request_space_region_access (VA adress, size_t region_size)
 	return _SUCCESS;
 }
 
-VA*	_request_free_space_region (VA* space, VA* last_free_space_adress, size_t size)
+void _shift_space_content_left(VA* starting_adress, VA* last_free_space_adress, uint offset)
+{
+	if (offset == 0) return;
+
+	VA* adress = starting_adress;
+	while (adress <= last_free_space_adress - offset)
+	{
+		*adress = *(adress + offset);
+		*(adress + offset) = NULL;
+		adress++;
+	}
+}
+
+VA* _defragment_space(VA* space, VA* last_free_space_adress)
+{
+	VA* starting_adress = space;
+	size_t nulled_space_region_size = 0;
+	while (starting_adress != NULL)
+	{
+		nulled_space_region_size = _nulled_space_region_size(_vas, starting_adress);
+		_shift_space_content_left(starting_adress, _last_free_va, nulled_space_region_size);
+
+		starting_adress++;
+		starting_adress = _first_null_content_adress(
+			space, starting_adress, last_free_space_adress
+		);
+	}
+	return _first_null_content_adress(space, space, last_free_space_adress);
+}
+
+VA* _request_free_space_region(VA* space, VA* last_free_space_adress, size_t size)
 {
 	if (size == 0) return space;
 
@@ -82,7 +159,7 @@ VA*	_request_free_space_region (VA* space, VA* last_free_space_adress, size_t si
 	size_t nulled_space_size = 0;
 	while (starting_adress != NULL)
 	{
- 		nulled_space_size = _nulled_space_region_size(space, starting_adress);
+		nulled_space_size = _nulled_space_region_size(space, starting_adress);
 		if (nulled_space_size >= size) return starting_adress;
 
 		starting_adress++;
@@ -92,22 +169,60 @@ VA*	_request_free_space_region (VA* space, VA* last_free_space_adress, size_t si
 	return NULL;
 }
 
-size_t _nulled_space_region_size (VA* space, VA* space_region)
+int	_organize_space_for_segment_allocation(
+	VA* space,
+	VA** first_free_space_adress,
+	VA* last_free_space_adress,
+	size_t segment_size
+)
 {
-	if (space_region == NULL) space_region = space;
+#define SIZE segment_size
+#define FIRST first_free_space_adress
+#define LAST last_free_space_adress
 
-	VA* adress = space_region;
-	size_t space_size = 0;
-	while (*adress == NULL)
+	if (*FIRST + SIZE > LAST)
 	{
-		space_size++;
-		adress++;
+		*first_free_space_adress = _request_free_space_region(space, last_free_space_adress, SIZE);
+
+		if ((*FIRST == NULL) ||
+			*FIRST + SIZE > LAST)
+		{
+			*first_free_space_adress = _defragment_space(space, last_free_space_adress);
+
+			if ((*FIRST == NULL) ||
+				*FIRST + SIZE > LAST + 1) return _MEMORY_LACK;
+		}
 	}
 
-	return space_size;
+	return _SUCCESS;
+
+#undef SIZE
+#undef FIRST
+#undef LAST
 }
 
-int _load_segment (segment* segment)
+int _allocate_segment(VA* allocating_adress, size_t size)
+{
+	VA vsegment_space = (VA)malloc(sizeof(char) * size);
+	if (vsegment_space == NULL) return _UNKNOWN_ERR;
+
+	uint curr_adress_offset = 0;
+	while (curr_adress_offset < size)
+	{
+		*(allocating_adress + curr_adress_offset) = vsegment_space + curr_adress_offset;
+		curr_adress_offset++;
+	}
+
+	return _SUCCESS;
+}
+
+int	_register_segment(segment* segment)
+{
+	int add_rec_return_code = _add_record_to_segment_table(segment);
+	return add_rec_return_code;
+}
+
+int _load_segment(segment* segment)
 {
 	int return_code = 0;
 	return_code = _organize_space_for_segment_allocation(
@@ -134,32 +249,14 @@ int _load_segment (segment* segment)
 	return _SUCCESS;
 }
 
-void _unload_segment (segment* segment)
-{
-	_clear_space_region (&segment->starting_pa, segment->size);
-	_change_loading_mark (segment, false);
-}
-
-void _clear_space_region (VA* starting_adress, size_t size)
-{
-	if (starting_adress == NULL || *starting_adress == NULL) return;
-
-	uint curr_adress_offset = 0;
-	while (curr_adress_offset < sizeof(**(starting_adress)) * size)
-	{
-		*(starting_adress + curr_adress_offset) = NULL;
-		curr_adress_offset++;
-	}
-}
-
-int _load_adjacent_segments (segment* central_segment)
+int _load_adjacent_segments(segment* central_segment)
 {
 	if (central_segment->starting_va != *_vas)
 	{
 		VA* left_adj_seg = _vas + _adress_abs_offset(
 			_vas,
 			central_segment->starting_va // убрать +1?
-			) - 1;
+		) - 1;
 		while (*left_adj_seg == NULL)
 		{
 			left_adj_seg--;
@@ -173,12 +270,12 @@ int _load_adjacent_segments (segment* central_segment)
 		}
 	}
 
-	if (central_segment->starting_va + central_segment->size != *_last_free_va) 
+	if (central_segment->starting_va + central_segment->size != *_last_free_va)
 	{
 		VA* right_adj_seg = _vas + _adress_abs_offset(
 			_vas,
-			central_segment->starting_va 
-			) + central_segment->size;
+			central_segment->starting_va
+		) + central_segment->size;
 		while (*right_adj_seg == NULL)
 		{
 			right_adj_seg++;
@@ -189,106 +286,19 @@ int _load_adjacent_segments (segment* central_segment)
 			if (right_seg == NULL) return _UNKNOWN_ERR;
 
 			if (_find_record(right_seg)->is_loaded == false) _load_segment(right_seg);
-		}		
-	}
-
-	return _SUCCESS;
-}
-
-VA* _defragment_space (VA* space, VA* last_free_space_adress)
-{
-	VA* starting_adress = space;
-	size_t nulled_space_region_size = 0;
-	while (starting_adress != NULL)
-	{
-		nulled_space_region_size = _nulled_space_region_size(_vas, starting_adress);
-		_shift_space_content_left(starting_adress, _last_free_va, nulled_space_region_size);
-
-		starting_adress++;
-		starting_adress = _first_null_content_adress(
-			space, starting_adress, last_free_space_adress
-			);
-	}
-	return _first_null_content_adress(space, space, last_free_space_adress);
-}
-
-VA* _first_null_content_adress (VA* space, VA* starting_adress, VA* last_free_space_adress)
-{
-	if (starting_adress == NULL) starting_adress = space;
-	VA* starting_adress_copy = starting_adress;
-
-	while (starting_adress_copy <= last_free_space_adress)
-	{
-		if (*starting_adress_copy == NULL) return starting_adress_copy;
-		starting_adress_copy++;
-	}
-
-	return NULL;
-}
-
-void _shift_space_content_left (VA* starting_adress, VA* last_free_space_adress, uint offset)
-{
-	if (offset == 0) return;
-
-	VA* adress = starting_adress;
-	while (adress <= last_free_space_adress - offset)
-	{
-		*adress = *(adress + offset);
-		*(adress + offset) = NULL;
-		adress++;
-	}
-}
-
-int	_organize_space_for_segment_allocation (
-	VA* space,
-	VA** first_free_space_adress, 
-	VA* last_free_space_adress, 
-	size_t segment_size
-	)
-{
-#define SIZE segment_size
-#define FIRST first_free_space_adress
-#define LAST last_free_space_adress
-
-	if (*FIRST + SIZE > LAST)
-	{
-		*first_free_space_adress = _request_free_space_region(space, last_free_space_adress, SIZE);
-		
-		if ((*FIRST == NULL) ||
-			*FIRST + SIZE > LAST)
-		{
-			*first_free_space_adress = _defragment_space(space, last_free_space_adress);
-
-			if ((*FIRST == NULL) ||
-				*FIRST + SIZE > LAST + 1) return _MEMORY_LACK;
 		}
 	}
 
 	return _SUCCESS;
-
-#undef SIZE
-#undef FIRST
-#undef LAST
 }
 
-int _unload_segments_to_free_space (size_t space_region_size)
+void _unload_segment(segment* segment)
 {
-	while (_count_of_loaded_segments > 0)
-	{
-		_unload_random_segment();
-		*_first_free_pa = _defragment_space(_pas, _last_free_pa);
-
-		*_first_free_pa = _request_free_space_region(_pas, _last_free_pa, space_region_size);
-		if (*_first_free_pa != NULL)
-		{
-			return _SUCCESS;
-		}
-	}
-
-	return _MEMORY_LACK;
+	_clear_space_region(&segment->starting_pa, segment->size);
+	_change_loading_mark(segment, false);
 }
 
-void _unload_random_segment ()
+void _unload_random_segment()
 {
 	for (uint rec_index = 0; rec_index < _ST_MAX_RECORDS_COUNT; rec_index++)
 	{
@@ -299,37 +309,24 @@ void _unload_random_segment ()
 	}
 }
 
-int	_init_adress (VA* adress, size_t content_size)
+int _unload_segments_to_free_space(size_t space_region_size)
 {
-	*adress = (VA)malloc(sizeof(VA) * content_size);
-	return (*adress == NULL) ? _UNKNOWN_ERR : _SUCCESS;
-}
-
-int _allocate_segment (VA* allocating_adress, size_t size)
-{
-	VA vsegment_space = (VA)malloc(sizeof(char) * size);
-	if (vsegment_space == NULL) return _UNKNOWN_ERR;
-
-	uint curr_adress_offset = 0;
-	while (curr_adress_offset < size)
+	while (_count_of_loaded_segments > 0)
 	{
-		*(allocating_adress + curr_adress_offset) = vsegment_space + curr_adress_offset;
-		curr_adress_offset++;
+		_unload_random_segment();
+		_first_free_pa = _defragment_space(_pas, _last_free_pa);
+
+		_first_free_pa = _request_free_space_region(_pas, _last_free_pa, space_region_size);
+		if (*_first_free_pa != NULL) return _SUCCESS;
 	}
 
-	return _SUCCESS;
+	return _MEMORY_LACK;
 }
 
-int	_register_segment (segment* segment)
-{
-	int add_rec_return_code = _add_record_to_segment_table(segment);
-	return add_rec_return_code;
-}
-
-void _print_space (VA* space, size_t adress_offset_limit, const char* space_name)
+void _print_space(VA* space, size_t adress_offset_limit, const char* space_name)
 {
 	printf("\n -------------------------------\n");
-	printf("| "); 
+	printf("| ");
 	printf(space_name);
 	printf("\t\t|");
 	printf("\n -------------------------------\n");
