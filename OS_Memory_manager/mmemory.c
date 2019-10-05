@@ -64,7 +64,7 @@ int _free (VA ptr)
 
 int _read(VA ptr, void* pBuffer, size_t szBuffer) 
 {
-	if (ptr == NULL || szBuffer <= 0) return _WRONG_PARAMS;
+	if (ptr == NULL || szBuffer <= 0 || pBuffer == NULL) return _WRONG_PARAMS;
 
 	uint ptr_offset = _adress_abs_offset(_vas, ptr);
 	if (ptr_offset == _FORBIDDEN_ADRESS_OFFSET) return _WRONG_PARAMS;
@@ -89,6 +89,25 @@ int _read(VA ptr, void* pBuffer, size_t szBuffer)
 
 int _write(VA ptr, void* pBuffer, size_t szBuffer) 
 {
+	if (ptr == NULL || szBuffer <= 0 || pBuffer == NULL) return _WRONG_PARAMS;
+
+	uint ptr_offset = _adress_abs_offset(_vas, ptr);
+	if (ptr_offset == _FORBIDDEN_ADRESS_OFFSET) return _WRONG_PARAMS;
+
+	segment* owner = _find_segment_by_inner_adress(ptr, szBuffer);
+	if (owner == NULL) return _WRONG_PARAMS;
+
+	int return_code = 0;
+	if (_find_record(owner)->is_loaded == false)
+	{
+		return_code = _load_segment(owner);
+		if (return_code != _SUCCESS) return return_code;
+	}
+
+	return_code = _load_adjacent_segments(owner);
+	if (return_code != _SUCCESS) return return_code;
+
+	memcpy(ptr, pBuffer, szBuffer);
 
 	return _SUCCESS;
 }

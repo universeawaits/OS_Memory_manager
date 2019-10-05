@@ -28,12 +28,14 @@ int main ()
 	_print_segment_table();
 
 	VA buffer = (VA)malloc(sizeof(*buffer) * 2);
-	test_read(s1, buffer, 2);
+	*buffer = 'a';
+	*(buffer + 1) = 'b';
+	test_write(s1, buffer, 2);
 
 	_print_space(_vas, 8, "Virtual adress space");
 	_print_space(_pas, 8, "Physical adress space");
 	_print_segment_table();
-	printf("%c%c", *(char*)buffer, *((char*)buffer + 1));
+	printf("%c%c", *(char*)s1, *((char*)s1 + 1));
 
 	return 0;
 }
