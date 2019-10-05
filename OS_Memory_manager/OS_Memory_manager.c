@@ -9,39 +9,31 @@
 int main ()
 {
 	size_t szPage = 5;
-	uint n = 100;
+	uint n = 30;
 	test_init(szPage, n);
-	_print_space(_vas, 10, "Virtual adress space");
-
-	VA s1 = NULL;
-	size_t size = 1;
-	test_malloc(&s1, size);
-	_print_space(_vas, 10, "Virtual adress space");
 
 	VA s2 = NULL;
-	size = 2;
+	size_t size = 2;
 	test_malloc(&s2, size);
-	_print_space(_vas, 10, "Virtual adress space");
+
+	VA s1 = NULL;
+	size = 3;
+	test_malloc(&s1, size);
 
 	VA s3 = NULL;
-	size = 3;
+	size = 1;
 	test_malloc(&s3, size);
-	_print_space(_vas, 10, "Virtual adress space");
-
-	test_free(s2);
-	_print_space(_vas, 10, "Virtual adress space");
-
-	VA s5 = NULL;
-	size = 230;
-	test_malloc(&s5, size);
-	_print_space(_vas, _vas_size, "Virtual adress space");
-
-	VA s6 = NULL;
-	size = 265;
-	test_malloc(&s6, size);
-	_print_space(_vas, _vas_size, "Virtual adress space");
-
+	_print_space(_vas, 8, "Virtual adress space");
+	_print_space(_pas, 8, "Physical adress space");
 	_print_segment_table();
+
+	VA buffer = (VA)malloc(sizeof(*buffer) * 2);
+	test_read(s1, buffer, 2);
+
+	_print_space(_vas, 8, "Virtual adress space");
+	_print_space(_pas, 8, "Physical adress space");
+	_print_segment_table();
+	printf("%c%c", *(char*)buffer, *((char*)buffer + 1));
 
 	return 0;
 }

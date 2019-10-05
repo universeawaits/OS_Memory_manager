@@ -7,35 +7,26 @@
 int _init_segment_table ()
 {
 	_segment_table = (segment_table*)malloc(sizeof(segment_table));
+	if (_segment_table == NULL) return _UNKNOWN_ERR;
 
-	if (_segment_table == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
 	_segment_table->current_records_count = 0;
 	_segment_table->first_free_index = 0;
 	_segment_table->records = (st_record*)malloc(sizeof(st_record) * _ST_MAX_RECORDS_COUNT);
-
-	if (_segment_table->records == NULL)
-	{
-		return _UNKNOWN_ERR;
-	}
+	if (_segment_table->records == NULL) return _UNKNOWN_ERR;
 
 	for (uint rec_index = 0; rec_index < _ST_MAX_RECORDS_COUNT; rec_index++)
 	{
 		_segment_table->records[rec_index].is_loaded = false;
 		_segment_table->records[rec_index].segment_ptr = NULL;
 	}
+	_count_of_loaded_segments = 0;
 
 	return _SUCCESS;
 }
 
 int _add_record_to_segment_table (segment* segment)
 {
-	if (_segment_table->first_free_index >= _ST_MAX_RECORDS_COUNT)
-	{
-		return _MEMORY_LACK;
-	}
+	if (_segment_table->first_free_index >= _ST_MAX_RECORDS_COUNT) return _MEMORY_LACK;
 
 	_segment_table->records[_segment_table->first_free_index].is_loaded = false;
 	_segment_table->records[_segment_table->first_free_index].segment_ptr = segment;
@@ -48,10 +39,7 @@ int _add_record_to_segment_table (segment* segment)
 
 int _remove_record_from_segment_table (segment* segment)
 {
-	if (segment == NULL)
-	{
-		return _WRONG_PARAMS;
-	}
+	if (segment == NULL) return _WRONG_PARAMS;
 
 	uint found_rec_index = 0;
 	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++) {
@@ -90,7 +78,7 @@ void _clear_segment_table_record (uint index)
 	record->is_loaded	= false;
 }
 
-segment* _find_segment (VA segment_starting_va)
+segment* _find_segment_by_starting_adress (VA segment_starting_va)
 {
 	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++)
 	{
@@ -101,6 +89,51 @@ segment* _find_segment (VA segment_starting_va)
 	}
 
 	return NULL;
+}
+
+// TODO: разделить фукнционал!!!
+segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_size)
+{
+	VA seg_starting_adress = NULL;
+	size_t segment_region_size_copy = segment_region_size;
+	uint segment_adress_offset = 0;
+	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++)
+	{
+		if (segment_region_size_copy == 0)
+		{
+			segment_region_size_copy = _segment_table->records[record_index].segment_ptr->size;
+		}
+
+		seg_starting_adress = _segment_table->records[record_index].segment_ptr->starting_va;
+		if (seg_starting_adress == inner_adress)
+		{
+			if (segment_region_size <= _segment_table->records[record_index].segment_ptr->size) // <= ?
+			{
+				return _segment_table->records[record_index].segment_ptr;
+			}
+			else return NULL; // Выход за пределы сегмента, низя
+		}
+		else
+		{
+			segment_adress_offset = 0;
+			while (segment_adress_offset < segment_region_size_copy)
+			{
+				if (seg_starting_adress + segment_adress_offset == inner_adress)
+				{
+					if (segment_region_size_copy <= _segment_table->records[record_index].segment_ptr->size) // <= ?
+					{
+						return _segment_table->records[record_index].segment_ptr;
+					}
+					else return NULL; // нашли нужный сегмент, но в итоге попытаемся выйти за его границы, низя
+				}
+				segment_adress_offset++;
+			}
+		}
+
+		segment_region_size_copy = segment_region_size;
+	}
+
+	return NULL; // Чем может быть вызвано (извне) попадание сюда??
 }
 
 st_record* _find_record (segment* segment)
@@ -116,12 +149,13 @@ st_record* _find_record (segment* segment)
 	return NULL;
 }
 
-void _mark_as_unloaded (segment* segment)
+void _change_loading_mark (segment* segment, bool is_loaded)
 {
 	st_record* found_rec = _find_record(segment);
-	found_rec->is_loaded = false;
-}
+	found_rec->is_loaded = is_loaded;
 
+	_count_of_loaded_segments += is_loaded ? 1 : -1;
+}
 
 void _print_segment_table()
 {

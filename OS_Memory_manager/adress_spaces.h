@@ -9,7 +9,6 @@
 	pa	- физический адрес
 	pas - физическое адресное пространство
 	st	- таблица сегментов
-	mem	- физическая память
 **/
 
 #ifndef ADRESS_SPACES_H
@@ -47,19 +46,24 @@ VA*			_first_free_va;				// Первый свободный виртуальный адрес
 VA*			_last_free_pa;				// Последний свободный физический адрес 
 VA*			_last_free_va;				// Последний свободный виртуальный адрес 
 
-int			_init_pas(size_t size);
-int			_init_vas(size_t size);
+int	_init_pas (size_t size);
+int	_init_vas (size_t size);
 
-void		_unload_segment (segment* segment);
-void		_load_adjacent_segments_into_mem (segment* central_segment);
+void _unload_segment (segment* segment);
 
+void _unload_random_segment ();
 
-uint		_adress_abs_offset (VA* space, VA adress);
-segment*	_find_segment (VA starting_va);
+int	_load_segment (segment* segment);
 
+int _load_adjacent_segments (segment* central_segment);
 
-VA*	_defragment_space(VA* space, VA* last_free_space_adress);
-void _clear_space_region(VA* starting_adress, size_t size);
+int _unload_segments_to_free_space (size_t space_region_size);
+
+uint _adress_abs_offset (VA* space, VA adress);
+
+VA*	_defragment_space (VA* space, VA* last_free_space_adress);
+
+void _clear_space_region (VA* starting_adress, size_t size);
 
 /*
 	@func	_shift_space_content_left
@@ -78,7 +82,12 @@ VA*	_request_free_space_region	(
 	);
 
 size_t _nulled_space_region_size (VA* space, VA* space_region);
-void _print_space(VA* space, size_t adress_offset_limit, const char* space_name);
+
+void _print_space (
+	VA* space, 
+	size_t adress_offset_limit,
+	const char* space_name
+	);
 
 
 /**
@@ -116,7 +125,7 @@ int	_register_segment (segment* segment);
 	@func	_renew_first_free_adress
 	@brief	Получение адреса первой свободной ячейки
 **/
-VA* _first_null_content_adress(
+VA* _first_null_content_adress (
 	VA* space,
 	VA* starting_adress,
 	VA* last_free_space_adress
