@@ -8,8 +8,11 @@
 
 int main ()
 {
-	test_init__wrong_params();
-	
+	VA* d = (VA)malloc(1);
+	_init(10, 300);
+	_malloc(d, 10);
+
+	_print_space(_vas, 10, "fds");
 
 	return 0;
 }

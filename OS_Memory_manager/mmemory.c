@@ -8,7 +8,8 @@
 
 int _malloc (VA* ptr, size_t szBlock)
 {
-	if (szBlock <= 0 || (szBlock >= _pas_size - _PAS_MIN_SIZE) || ptr == NULL)
+	if (szBlock <= 0 || (szBlock >= _pas_size - _PAS_MIN_SIZE) ||
+		szBlock > _vas_size || ptr == NULL)
 	{
 		return _WRONG_PARAMS;
 	}
