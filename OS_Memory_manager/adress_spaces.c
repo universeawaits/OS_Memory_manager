@@ -6,7 +6,7 @@
 
 int _init_pas(size_t size)
 {
-	if (size > _PAS_MAX_SIZE || size < 0 || size < _PAS_MIN_SIZE) return _WRONG_PARAMS;
+	if (size > _PAS_MAX_SIZE || size < 0 || size <= _PAS_MIN_SIZE) return _WRONG_PARAMS;
 
 	_pas = (VA*)malloc(sizeof(VA) * size);
 	if (_pas == NULL) return _UNKNOWN_ERR;

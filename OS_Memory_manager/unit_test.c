@@ -4,6 +4,7 @@
 #include "unit_test.h"
 
 #include <assert.h>
+#include <stdlib.h>
 
 void test_init__success ()
 {
@@ -30,12 +31,13 @@ void test_init__unknown_err ()
 
 void test_malloc__success ()
 {
-	out_ptr = (VA)malloc(sizeof(VA));
+	out_ptr = (VA*)malloc(sizeof(VA));
 	size = _vas_size;
-	for (uint rec_index = 0; _segment_table->records[rec_index].segment_ptr != NULL; rec_index++)
+	for (uint rec_index = 0; _segment_table->records[rec_index].segment_ptr != NULL && size >= 0; rec_index++)
 	{
-		size = -_segment_table->records[rec_index].segment_ptr->size;
+		size = size - _segment_table->records[rec_index].segment_ptr->size;
 	}
+	size -= size / 2;
 
 	int malloc_return_code = _malloc(out_ptr, size);
 	assert(malloc_return_code == _SUCCESS);
@@ -43,25 +45,28 @@ void test_malloc__success ()
 
 void test_malloc__wrong_params ()
 {
-	out_ptr = (VA)malloc(sizeof(VA));
-	size = _vas_size;
+	out_ptr = (VA*)malloc(sizeof(VA));
+	size = _vas_size + 1;
 
 	int malloc_return_code = _malloc(out_ptr, size);
-	assert(malloc_return_code == _SUCCESS);
+	assert(malloc_return_code == _WRONG_PARAMS);
 }
 
 void test_malloc__memory_lack ()
 {
-	out_ptr = (VA)malloc(sizeof(VA));
+	out_ptr = (VA*)malloc(sizeof(VA));
 	size = _vas_size;
-	for (uint rec_index = 0; _segment_table->records[rec_index].segment_ptr != NULL; rec_index++)
+	for (uint rec_index = 0; _segment_table->records[rec_index].segment_ptr != NULL && size >= 0; rec_index++)
 	{
-		size = -_segment_table->records[rec_index].segment_ptr->size;
+		size = size - _segment_table->records[rec_index].segment_ptr->size;
 	}
 	size += 1;
 
 	int malloc_return_code = _malloc(out_ptr, size);
-	assert(malloc_return_code == _SUCCESS);
+	if (size != _vas_size + 1)
+	{
+		assert(malloc_return_code == _MEMORY_LACK);
+	}
 }
 
 void test_malloc__unknown_err ()
