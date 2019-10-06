@@ -43,7 +43,7 @@ int				_remove_record_from_segment_table (segment* segment);
 void			_clear_segment_table ();
 void			_clear_segment_table_record (uint index);
 segment*		_find_segment_by_starting_adress(VA starting_va);
-segment*		_find_segment_by_inner_adress (VA inner_adress, size_t segment_region_size);
+int				_find_segment_by_inner_adress (VA inner_adress, size_t segment_region_size, segment** found_segment);
 st_record*		_find_record (segment* segment);
 void			_change_loading_mark (segment* segment, bool is_loaded);
 

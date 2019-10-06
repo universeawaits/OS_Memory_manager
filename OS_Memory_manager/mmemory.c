@@ -58,7 +58,8 @@ int _free (VA ptr)
 		_vas + _adress_abs_offset(_vas, found_segment->starting_va),
 		found_segment->size
 		);
-	_remove_record_from_segment_table(found_segment);
+	int return_code = _remove_record_from_segment_table(found_segment);
+	if (return_code != _SUCCESS) return return_code;
 
 	return _SUCCESS;
 }
@@ -70,7 +71,7 @@ int _read(VA ptr, void* pBuffer, size_t szBuffer)
 	int req_access_return_code = _request_space_region_access(ptr, szBuffer);
 	if (req_access_return_code == _SUCCESS) memcpy(pBuffer, ptr, szBuffer);
 
-	return _SUCCESS;
+	return req_access_return_code;
 }
 
 int _write(VA ptr, void* pBuffer, size_t szBuffer) 

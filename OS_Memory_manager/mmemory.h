@@ -11,6 +11,7 @@
 #define _WRONG_PARAMS -1
 #define _MEMORY_LACK -2
 #define _UNKNOWN_ERR 1
+#define _SEGMENT_ACCESS_VIOLATION -2
 
 typedef char* VA;				// Тип описывающий адрес блока 
 

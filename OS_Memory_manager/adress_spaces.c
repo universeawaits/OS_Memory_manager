@@ -105,10 +105,12 @@ int _request_space_region_access(VA adress, size_t region_size)
 	uint adress_offset = _adress_abs_offset(_vas, adress);
 	if (adress_offset == _FORBIDDEN_ADRESS_OFFSET) return _WRONG_PARAMS;
 
-	segment* owner = _find_segment_by_inner_adress(adress, region_size);
-	if (owner == NULL) return _WRONG_PARAMS;
+	segment* owner = (segment*)malloc(sizeof(segment));
 
 	int return_code = 0;
+	return_code = _find_segment_by_inner_adress(adress, region_size, &owner);
+	if (return_code != _SUCCESS) return return_code;
+	
 	if (_find_record(owner)->is_loaded == false)
 	{
 		return_code = _load_segment(owner);
@@ -263,8 +265,9 @@ int _load_adjacent_segments(segment* central_segment)
 		}
 		if (left_adj_seg + 1 != _vas)
 		{
-			segment* left_seg = _find_segment_by_inner_adress(*left_adj_seg, 0);
-			if (left_seg == NULL) return _UNKNOWN_ERR;
+			segment* left_seg = (segment*)malloc(sizeof(segment));
+			int return_code = _find_segment_by_inner_adress(*left_adj_seg, 0, &left_seg);
+			if (return_code != _SUCCESS) return return_code;
 
 			if (_find_record(left_seg)->is_loaded == false) _load_segment(left_seg);
 		}
@@ -282,8 +285,9 @@ int _load_adjacent_segments(segment* central_segment)
 		}
 		if (right_adj_seg - 1 != _last_free_va)
 		{
-			segment* right_seg = _find_segment_by_inner_adress(*right_adj_seg, 0);
-			if (right_seg == NULL) return _UNKNOWN_ERR;
+			segment* right_seg = (segment*)malloc(sizeof(segment));
+			int return_code	= _find_segment_by_inner_adress(*right_adj_seg, 0, &right_seg);
+			if (return_code != _SUCCESS) return return_code;
 
 			if (_find_record(right_seg)->is_loaded == false) _load_segment(right_seg);
 		}
