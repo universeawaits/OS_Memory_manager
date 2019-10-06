@@ -42,14 +42,17 @@ int _remove_record_from_segment_table (segment* segment)
 	if (segment == NULL) return _WRONG_PARAMS;
 
 	uint found_rec_index = 0;
+	bool is_segment_found = false;
 	for (uint record_index = 0; record_index < _segment_table->current_records_count; record_index++) {
 		if ((_segment_table->records + record_index)->segment_ptr == segment)
 		{
 			found_rec_index = record_index;
+			is_segment_found = true;
 			break;
 		}
 	}
 
+	if (is_segment_found == false) return _UNKNOWN_ERR;
 	_clear_segment_table_record(found_rec_index);
 
 	uint last_rec_index = _segment_table->current_records_count - 1;
@@ -92,7 +95,7 @@ segment* _find_segment_by_starting_adress (VA segment_starting_va)
 }
 
 // TODO: разделить фукнционал!!!
-segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_size)
+int _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_size, segment** found_segment)
 {
 	VA seg_starting_adress = NULL;
 	size_t segment_region_size_copy = segment_region_size;
@@ -107,11 +110,11 @@ segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_s
 		seg_starting_adress = _segment_table->records[record_index].segment_ptr->starting_va;
 		if (seg_starting_adress == inner_adress)
 		{
-			if (segment_region_size <= _segment_table->records[record_index].segment_ptr->size) // <= ?
+			if (segment_region_size <= _segment_table->records[record_index].segment_ptr->size)
 			{
 				return _segment_table->records[record_index].segment_ptr;
 			}
-			else return NULL; // Выход за пределы сегмента, низя
+			else return _SEGMENT_ACCESS_VIOLATION; // Выход за пределы сегмента, низя
 		}
 		else
 		{
@@ -122,9 +125,10 @@ segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_s
 				{
 					if (segment_region_size_copy <= _segment_table->records[record_index].segment_ptr->size) // <= ?
 					{
-						return _segment_table->records[record_index].segment_ptr;
+						found_segment = _segment_table->records[record_index].segment_ptr;
+						return _SUCCESS;
 					}
-					else return NULL; // нашли нужный сегмент, но в итоге попытаемся выйти за его границы, низя
+					else return _SEGMENT_ACCESS_VIOLATION; // нашли нужный сегмент, но в итоге попытаемся выйти за его границы, низя
 				}
 				segment_adress_offset++;
 			}
@@ -133,7 +137,7 @@ segment* _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_s
 		segment_region_size_copy = segment_region_size;
 	}
 
-	return NULL; // Чем может быть вызвано (извне) попадание сюда??
+	return _UNKNOWN_ERR; // Чем может быть вызвано (извне) попадание сюда??
 }
 
 st_record* _find_record (segment* segment)
