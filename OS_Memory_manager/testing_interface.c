@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void print_init_test_menu()
+void print_init_test_menu ()
 {
 	__CLEAR_CONSOLE_CONTENT;
 	printf(" -------------------------------\n");
@@ -53,13 +53,14 @@ void print_init_test_menu()
 	}
 }
 
-void print_main_menu()
+void print_main_menu ()
 {
 	__CLEAR_CONSOLE_CONTENT;
 	printf(" -------------------------------\n");
 	printf("|  TESTING MENU\t\t\t|\n");
 	printf(" -------------------------------\n");
-	printf("|  1. _malloc()\ttests\t\t|\n|  2. _read()\ttests\t\t|\n|  3. _write()\ttests\t\t|\n");
+	printf("|  1. _malloc()\ttests\t\t|\n|  2. _free()\ttests\t\t|\n");
+	printf("|  3. _read()\ttests\t\t|\n|  4. _write()\ttests\t\t|\n");
 	printf(" -------------------------------\n");
 	printf("|  0. Exit\t\t\t|\n");
 	printf(" -------------------------------\n");
@@ -77,12 +78,17 @@ void print_main_menu()
 	}
 	case 2:
 	{
-		print_write_test_menu ();
+		print_free_test_menu ();
 		break;
 	}
 	case 3:
 	{
-		print_read_test_menu();
+		print_write_test_menu ();
+		break;
+	}
+	case 4:
+	{
+		print_read_test_menu ();
 		break;
 	}
 	case 0:
@@ -167,12 +173,69 @@ void print_malloc_test_menu ()
 	}
 }
 
-void print_write_test_menu()
+void print_free_test_menu () {
+	__CLEAR_CONSOLE_CONTENT;
+	printf(" -------------------------------\n");
+	printf("|  FREE TESTING\t\t\t|\n");
+	printf(" -------------------------------\n");
+	printf("|  1. With success\t\t|\n|  2. With wrong params\t\t|\n");
+	printf("|  3. With unknown error\t|\n");
+	printf(" -------------------------------\n");
+	printf("|  0. Exit\t\t\t|\n| -1. Back\t\t\t|\n");
+	printf(" -------------------------------\n");
+	__PRINT_CHOOSE_PROMPT;
+
+	scanf_s("%d", &choose);
+	fflush(stdin);
+
+	switch (choose)
+	{
+	case 1:
+	{
+		test_free__success();
+		__SLEEP_LONG;
+		print_free_test_menu();
+		break;
+	}
+	case 2:
+	{
+		test_free__wrong_params();
+		__SLEEP_LONG;
+		print_free_test_menu();
+		break;
+	}
+	case 3:
+	{
+		test_free__unknown_err();
+		__SLEEP_LONG;
+		print_free_test_menu();
+		break;
+	}
+	case 0:
+	{
+		exit(0);
+	}
+	case -1:
+	{
+		print_main_menu();
+		break;
+	}
+	default:
+	{
+		__PRINT_UNCORRECT_CHOOSE_WARN;
+		__SLEEP_SHORT;
+		print_free_test_menu();
+		break; // а что если его убрать?
+	}
+	}
+}
+
+void print_write_test_menu ()
 {
 
 }
 
-void print_read_test_menu()
+void print_read_test_menu ()
 {
 
 }

@@ -14,3 +14,7 @@ void test_malloc__success ();
 void test_malloc__wrong_params ();
 void test_malloc__memory_lack ();
 void test_malloc__unknown_err ();
+
+void test_free__success();
+void test_free__wrong_params();
+void test_free__unknown_err();
