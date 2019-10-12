@@ -193,6 +193,16 @@ void print_free_test_menu () {
 	case 1:
 	{
 		test_free__success();
+		if (*freed_seg_starting_adress != NULL)
+		{
+			printf("   Freed segment adress (&VA) is %p, size was %d. ",
+				*freed_seg_starting_adress,
+				size);
+		}
+		else
+		{
+			printf("   There's no any segment in memory. ");
+		}
 		__SLEEP_LONG;
 		print_free_test_menu();
 		break;
@@ -200,6 +210,8 @@ void print_free_test_menu () {
 	case 2:
 	{
 		test_free__wrong_params();
+		printf	("   Segment starting adress (&VA) expected to be is %p, but there's no such segment. ",
+				*freed_seg_starting_adress);
 		__SLEEP_LONG;
 		print_free_test_menu();
 		break;
@@ -225,7 +237,7 @@ void print_free_test_menu () {
 		__PRINT_UNCORRECT_CHOOSE_WARN;
 		__SLEEP_SHORT;
 		print_free_test_menu();
-		break; // а что если его убрать?
+		break; // а что если его убрать? // ничего
 	}
 	}
 }

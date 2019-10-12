@@ -6,6 +6,10 @@ int szPage;
 VA* out_ptr;
 size_t size;
 
+VA** freed_seg_starting_adress;
+
+void init_testing_env ();
+
 void test_init__success ();
 void test_init__wrong_params ();
 void test_init__unknown_err ();
