@@ -161,8 +161,8 @@ void print_malloc_test_menu ()
 	{
 		__PRINT_UNCORRECT_CHOOSE_WARN;
 		__SLEEP_SHORT;
-		print_main_menu();
-		break; //  а что если его убрать?
+		print_malloc_test_menu();
+		break; // а что если его убрать?
 	}
 	}
 }
