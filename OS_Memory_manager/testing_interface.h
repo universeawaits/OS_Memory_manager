@@ -11,5 +11,6 @@ int choose;
 void print_init_test_menu ();
 void print_main_menu ();
 void print_malloc_test_menu ();
+void print_free_test_menu ();
 void print_write_test_menu ();
 void print_read_test_menu ();
