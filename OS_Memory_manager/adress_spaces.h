@@ -101,22 +101,6 @@ size_t	_nulled_space_region_size(VA* space, VA* space_region);
 **/
 int		_request_space_region_access (VA adress, size_t region_size);
 
-/*
-	@func	_shift_space_content_left
-	@brief	Сдвиг содержимого адресов пространства влево
-*/
-void	_shift_space_content_left(
-		VA* starting_adress,
-		VA* last_free_space_adress,
-		uint offset
-);
-
-/**
-	@func	_defragment_space
-	@brief	Дефрагментация адресного пространства
-**/
-VA*		_defragment_space(VA* space, VA* last_free_space_adress);
-
 /**
 	@func	_request_free_space_region
 	@brief	Получение пустой облатси заданного размера

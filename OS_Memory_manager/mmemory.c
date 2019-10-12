@@ -64,7 +64,7 @@ int _free (VA ptr)
 	return _SUCCESS;
 }
 
-int _read(VA ptr, void* pBuffer, size_t szBuffer) 
+int _read (VA ptr, void* pBuffer, size_t szBuffer) 
 {
 	if (ptr == NULL || szBuffer <= 0 || pBuffer == NULL) return _WRONG_PARAMS;
 
@@ -74,7 +74,7 @@ int _read(VA ptr, void* pBuffer, size_t szBuffer)
 	return req_access_return_code;
 }
 
-int _write(VA ptr, void* pBuffer, size_t szBuffer) 
+int _write (VA ptr, void* pBuffer, size_t szBuffer) 
 {
 	if (ptr == NULL || szBuffer <= 0 || pBuffer == NULL) return _WRONG_PARAMS;
 
@@ -84,7 +84,7 @@ int _write(VA ptr, void* pBuffer, size_t szBuffer)
 	return req_access_return_code;
 }
 
-int _init(int n, int szPage) 
+int _init (int n, int szPage) 
 {
 	int init_pas_return_code = _init_pas(n * szPage);
 	if (init_pas_return_code != _SUCCESS) return init_pas_return_code;
