@@ -45,7 +45,7 @@ void test_malloc__success ()
 	{
 		size = size - _segment_table->records[rec_index].segment_ptr->size;
 	}
-	size -= size / 2;
+	size -= 3 * size / 4;
 
 	int malloc_return_code = _malloc(out_ptr, size);
 	assert(malloc_return_code == _SUCCESS);

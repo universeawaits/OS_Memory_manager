@@ -68,7 +68,8 @@ int _read (VA ptr, void* pBuffer, size_t szBuffer)
 {
 	if (ptr == NULL || szBuffer <= 0 || pBuffer == NULL) return _WRONG_PARAMS;
 
-	int req_access_return_code = _request_space_region_access(ptr, szBuffer);
+	VA readed_pa = NULL;
+	int req_access_return_code = _request_space_region_access(ptr, &readed_pa, szBuffer);
 	if (req_access_return_code == _SUCCESS) memcpy(pBuffer, ptr, szBuffer);
 
 	return req_access_return_code;
@@ -78,8 +79,14 @@ int _write (VA ptr, void* pBuffer, size_t szBuffer)
 {
 	if (ptr == NULL || szBuffer <= 0 || pBuffer == NULL) return _WRONG_PARAMS;
 
-	int req_access_return_code = _request_space_region_access(ptr, szBuffer);
-	if (req_access_return_code == _SUCCESS) memcpy(ptr, pBuffer, szBuffer);
+	VA filling_pa = NULL;
+	int req_access_return_code = _request_space_region_access(ptr, &filling_pa, szBuffer);
+
+	if (req_access_return_code == _SUCCESS)
+	{
+		memcpy(ptr, pBuffer, szBuffer);
+		memcpy(filling_pa, pBuffer, szBuffer);
+	}
 
 	return req_access_return_code;
 }

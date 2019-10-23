@@ -100,15 +100,15 @@ size_t _nulled_space_region_size(VA* space, VA* space_region)
 	return space_size;
 }
 
-int _request_space_region_access(VA adress, size_t region_size)
+int _request_space_region_access(VA va, VA* pa, size_t region_size)
 {
-	uint adress_offset = _adress_abs_offset(_vas, adress);
+	uint adress_offset = _adress_abs_offset(_vas, va);
 	if (adress_offset == _FORBIDDEN_ADRESS_OFFSET) return _WRONG_PARAMS;
 
 	segment* owner = (segment*)malloc(sizeof(segment));
 
 	int return_code = 0;
-	return_code = _find_segment_by_inner_adress(adress, region_size, &owner);
+	return_code = _find_segment_by_inner_adress(va, region_size, &owner);
 	if (return_code != _SUCCESS) return return_code;
 	
 	if (_find_record(owner)->is_loaded == false)
@@ -120,6 +120,7 @@ int _request_space_region_access(VA adress, size_t region_size)
 	return_code = _load_adjacent_segments(owner);
 	if (return_code != _SUCCESS) return return_code;
 
+	*pa = owner->starting_pa + adress_offset;
 	return _SUCCESS;
 }
 
@@ -164,7 +165,7 @@ int	_organize_space_for_segment_allocation(
 			return _MEMORY_LACK;
 		}
 
-		*first_free_space_adress = *free_space;
+		*first_free_space_adress = *free_space;// ??? * and **
 
 		if ((*FIRST == NULL) ||
 			*FIRST + SIZE > LAST)
