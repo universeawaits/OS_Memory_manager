@@ -45,7 +45,7 @@ int _init_vas (size_t size)
 
 int	_init_adress(VA* adress, size_t content_size)
 {
-	*adress = (VA)malloc(sizeof(VA) * content_size);
+	*adress = (VA)malloc(content_size);
 	return (*adress == NULL) ? _UNKNOWN_ERR : _SUCCESS;
 }
 
@@ -100,15 +100,15 @@ size_t _nulled_space_region_size(VA* space, VA* space_region)
 	return space_size;
 }
 
-int _request_space_region_access(VA adress, size_t region_size)
+int _request_space_region_access(VA va, VA* pa, size_t region_size)
 {
-	uint adress_offset = _adress_abs_offset(_vas, adress);
+	uint adress_offset = _adress_abs_offset(_vas, va);
 	if (adress_offset == _FORBIDDEN_ADRESS_OFFSET) return _WRONG_PARAMS;
 
 	segment* owner = (segment*)malloc(sizeof(segment));
 
 	int return_code = 0;
-	return_code = _find_segment_by_inner_adress(adress, region_size, &owner);
+	return_code = _find_segment_by_inner_adress(va, region_size, &owner);
 	if (return_code != _SUCCESS) return return_code;
 	
 	if (_find_record(owner)->is_loaded == false)
@@ -120,6 +120,7 @@ int _request_space_region_access(VA adress, size_t region_size)
 	return_code = _load_adjacent_segments(owner);
 	if (return_code != _SUCCESS) return return_code;
 
+	*pa = owner->starting_pa + adress_offset;
 	return _SUCCESS;
 }
 
@@ -129,13 +130,17 @@ VA* _request_free_space_region(VA* space, VA* last_free_space_adress, size_t siz
 
 	VA* starting_adress = space;
 	size_t nulled_space_size = 0;
-	while (starting_adress != NULL)
+	while (*starting_adress != NULL)
 	{
 		nulled_space_size = _nulled_space_region_size(space, starting_adress);
 		if (nulled_space_size >= size) return starting_adress;
 
 		starting_adress++;
-		starting_adress = _first_null_content_adress(space, starting_adress, last_free_space_adress);
+		starting_adress = _first_null_content_adress(
+			space,
+			starting_adress, 
+			last_free_space_adress
+		);
 	}
 
 	return NULL;
@@ -154,7 +159,13 @@ int	_organize_space_for_segment_allocation(
 
 	if (*FIRST + SIZE > LAST)
 	{
-		*first_free_space_adress = _request_free_space_region(space, last_free_space_adress, SIZE);
+		VA* free_space = _request_free_space_region(space, LAST, SIZE);
+		if (free_space == NULL)
+		{
+			return _MEMORY_LACK;
+		}
+
+		*first_free_space_adress = *free_space;// ??? * and **
 
 		if ((*FIRST == NULL) ||
 			*FIRST + SIZE > LAST)

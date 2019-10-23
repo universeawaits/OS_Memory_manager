@@ -1,10 +1,12 @@
 #include <Windows.h>
+#include <stdio.h>
 
 #define __CLEAR_CONSOLE_CONTENT system("cls")
 #define __PRINT_UNCORRECT_CHOOSE_WARN printf("   Choose a right variant. ")
-#define __SLEEP_SHORT printf("Waiting..."); Sleep(1000);
-#define __SLEEP_LONG printf("Waiting..."); Sleep(5000);
-#define __PRINT_CHOOSE_PROMPT printf(">  Your choose: ")
+#define __SLEEP_SHORT printf("Waiting..."); Sleep(1000)
+#define __SLEEP_LONG printf("Waiting..."); Sleep(2300)
+#define __PRINT_CHOOSE_PROMPT printf(">  Your choise: ")
+#define __WAIT_FOR_CONTINUE printf("Waiting..."); Sleep(11000)
 
 int choose;
 

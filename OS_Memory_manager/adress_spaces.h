@@ -99,7 +99,7 @@ size_t	_nulled_space_region_size(VA* space, VA* space_region);
 	@func	_request_space_region_access
 	@brief	Получение доступа к области памяти
 **/
-int		_request_space_region_access (VA adress, size_t region_size);
+int		_request_space_region_access (VA va, VA* pa, size_t region_size);
 
 /**
 	@func	_request_free_space_region

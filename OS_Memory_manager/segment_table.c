@@ -112,7 +112,8 @@ int _find_segment_by_inner_adress (VA inner_adress, size_t segment_region_size, 
 		{
 			if (segment_region_size <= _segment_table->records[record_index].segment_ptr->size)
 			{
-				return _segment_table->records[record_index].segment_ptr;
+				*found_segment = _segment_table->records[record_index].segment_ptr;
+				return _SUCCESS;
 			}
 			else return _SEGMENT_ACCESS_VIOLATION; // Выход за пределы сегмента, низя
 		}
