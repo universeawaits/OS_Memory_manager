@@ -45,7 +45,7 @@ int _init_vas (size_t size)
 
 int	_init_adress(VA* adress, size_t content_size)
 {
-	*adress = (VA)malloc(sizeof(VA) * content_size);
+	*adress = (VA)malloc(content_size);
 	return (*adress == NULL) ? _UNKNOWN_ERR : _SUCCESS;
 }
 
@@ -129,13 +129,17 @@ VA* _request_free_space_region(VA* space, VA* last_free_space_adress, size_t siz
 
 	VA* starting_adress = space;
 	size_t nulled_space_size = 0;
-	while (starting_adress != NULL)
+	while (*starting_adress != NULL)
 	{
 		nulled_space_size = _nulled_space_region_size(space, starting_adress);
 		if (nulled_space_size >= size) return starting_adress;
 
 		starting_adress++;
-		starting_adress = _first_null_content_adress(space, starting_adress, last_free_space_adress);
+		starting_adress = _first_null_content_adress(
+			space,
+			starting_adress, 
+			last_free_space_adress
+		);
 	}
 
 	return NULL;
@@ -154,7 +158,13 @@ int	_organize_space_for_segment_allocation(
 
 	if (*FIRST + SIZE > LAST)
 	{
-		*first_free_space_adress = _request_free_space_region(space, last_free_space_adress, SIZE);
+		VA* free_space = _request_free_space_region(space, LAST, SIZE);
+		if (free_space == NULL)
+		{
+			return _MEMORY_LACK;
+		}
+
+		*first_free_space_adress = *free_space;
 
 		if ((*FIRST == NULL) ||
 			*FIRST + SIZE > LAST)

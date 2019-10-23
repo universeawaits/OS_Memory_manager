@@ -11,6 +11,8 @@ void init_testing_env()
 	out_ptr = (VA)malloc(sizeof(VA));
 	freed_seg_starting_adress = (VA**)malloc(sizeof(VA*));
 	*freed_seg_starting_adress = (VA*)malloc(sizeof(VA));
+	written = (VA*)malloc(sizeof(VA));
+	//written = (VA)malloc.....
 }
 
 void test_init__success ()
@@ -109,3 +111,71 @@ void test_free__unknown_err() {
 
 }
 
+void test_write__success()
+{
+	segment* segment = _segment_table->records[0].segment_ptr;
+	size = 2;
+
+	if (segment !=  NULL)
+	{
+		VA filled_adress = _segment_table->records[0].segment_ptr->starting_va;
+		pBuffer = (VA)malloc(sizeof(*pBuffer) * size);
+
+		if (pBuffer != NULL)
+		{
+			*pBuffer = 'a';
+			*(pBuffer + 1) = 'b';
+
+			int write_return_code = _write(filled_adress, pBuffer, 2);
+			assert(write_return_code == _SUCCESS);
+
+			*written = *filled_adress;
+		}
+	}
+}
+
+void test_write__wrong_params()
+{
+	/*VA* filled_adress = _vas + _vas_size + 1;
+	size = 2;
+
+	pBuffer = (VA)malloc(sizeof(*pBuffer) * size);
+
+	if (pBuffer != NULL) {
+		*pBuffer = 'a';
+		*(pBuffer + 1) = 'b';
+
+		int write_return_code = _write(*filled_adress, *pBuffer, 2);
+		assert(write_return_code == _WRONG_PARAMS);
+	}*/
+}
+
+void test_write__unknown_error()
+{
+
+}
+
+void test_write__segment_access_violation()
+{
+
+}
+
+void test_read__success()
+{
+
+}
+
+void test_read__wrong_params()
+{
+
+}
+
+void test_read__unknown_error()
+{
+
+}
+
+void test_read__segment_access_violation()
+{
+
+}

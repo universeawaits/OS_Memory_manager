@@ -74,7 +74,7 @@ int _read (VA ptr, void* pBuffer, size_t szBuffer)
 	return req_access_return_code;
 }
 
-int _write (VA ptr, void* pBuffer, size_t szBuffer) 
+int _write (VA ptr, void* pBuffer, size_t szBuffer)
 {
 	if (ptr == NULL || szBuffer <= 0 || pBuffer == NULL) return _WRONG_PARAMS;
 

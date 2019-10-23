@@ -1,5 +1,6 @@
 #include "testing_interface.h"
 #include "unit_test.h"
+#include "adress_spaces.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,6 +64,7 @@ void print_main_menu ()
 	printf("|  3. _read()\ttests\t\t|\n|  4. _write()\ttests\t\t|\n");
 	printf(" -------------------------------\n");
 	printf("|  0. Exit\t\t\t|\n");
+	printf("| -2. Print VAS\t\t\t|\n| -3. Print PAS\t\t\t|\n");
 	printf(" -------------------------------\n");
 	__PRINT_CHOOSE_PROMPT;
 
@@ -71,6 +73,20 @@ void print_main_menu ()
 
 	switch (choose)
 	{
+	case -3:
+	{
+		_print_space(_pas, _pas_size, _PAS_NAME);
+		__WAIT_FOR_CONTINUE;
+		print_main_menu();
+		break;
+	}
+	case -2:
+	{
+		_print_space(_vas, _vas_size, _VAS_NAME);
+		__WAIT_FOR_CONTINUE;
+		print_main_menu();
+		break;
+	}
 	case 1:
 	{
 		print_malloc_test_menu ();
@@ -83,12 +99,12 @@ void print_main_menu ()
 	}
 	case 3:
 	{
-		print_write_test_menu ();
+		print_read_test_menu();
 		break;
 	}
 	case 4:
 	{
-		print_read_test_menu ();
+		print_write_test_menu();
 		break;
 	}
 	case 0:
@@ -115,14 +131,28 @@ void print_malloc_test_menu ()
 	printf("|  3. With memory lack\t\t|\n|  4. With unknown error\t|\n");
 	printf(" -------------------------------\n");
 	printf("|  0. Exit\t\t\t|\n| -1. Back\t\t\t|\n");
+	printf("| -2. Print VAS\t\t\t|\n| -3. Print PAS\t\t\t|\n");
 	printf(" -------------------------------\n");
 	__PRINT_CHOOSE_PROMPT;
 
 	scanf_s("%d", &choose);
-	fflush(stdin);
 
 	switch (choose)
 	{
+	case -3:
+	{
+		_print_space(_pas, _pas_size, _PAS_NAME);
+		__WAIT_FOR_CONTINUE;
+		print_malloc_test_menu();
+		break;
+	}
+	case -2:
+	{
+		_print_space(_vas, _vas_size, _VAS_NAME);
+		__WAIT_FOR_CONTINUE;
+		print_malloc_test_menu();
+		break;
+	}
 	case 1:
 	{
 		test_malloc__success ();
@@ -182,14 +212,28 @@ void print_free_test_menu () {
 	printf("|  3. With unknown error\t|\n");
 	printf(" -------------------------------\n");
 	printf("|  0. Exit\t\t\t|\n| -1. Back\t\t\t|\n");
+	printf("| -2. Print VAS\t\t\t|\n| -3. Print PAS\t\t\t|\n");
 	printf(" -------------------------------\n");
 	__PRINT_CHOOSE_PROMPT;
 
 	scanf_s("%d", &choose);
-	fflush(stdin);
 
 	switch (choose)
 	{
+	case -3:
+	{
+		_print_space(_pas, _pas_size, _PAS_NAME);
+		__WAIT_FOR_CONTINUE;
+		print_free_test_menu();
+		break;
+	}
+	case -2:
+	{
+		_print_space(_vas, _vas_size, _VAS_NAME);
+		__WAIT_FOR_CONTINUE;
+		print_free_test_menu();
+		break;
+	}
 	case 1:
 	{
 		test_free__success();
@@ -244,7 +288,86 @@ void print_free_test_menu () {
 
 void print_write_test_menu ()
 {
+	__CLEAR_CONSOLE_CONTENT;
+	printf(" -------------------------------\n");
+	printf("|  WRITE TESTING\t\t|\n");
+	printf(" -------------------------------\n");
+	printf("|  1. With success\t\t|\n|  2. With wrong params\t\t|\n");
+	printf("|  3. With unknown error\t\n|  4. With segment violation\t|\n");
+	printf(" -------------------------------\n");
+	printf("|  0. Exit\t\t\t|\n| -1. Back\t\t\t|\n");
+	printf("| -2. Print VAS\t\t\t|\n| -3. Print PAS\t\t\t|\n");
+	printf(" -------------------------------\n");
+	__PRINT_CHOOSE_PROMPT;
 
+	scanf_s("%d", &choose);
+
+	switch (choose)
+	{
+	case -3:
+	{
+		_print_space(_pas, _pas_size, _PAS_NAME);
+		__WAIT_FOR_CONTINUE;
+		print_write_test_menu();
+		break;
+	}
+	case -2:
+	{
+		_print_space(_vas, _vas_size, _VAS_NAME);
+		__WAIT_FOR_CONTINUE;
+		print_write_test_menu();
+		break;
+	}
+	case 1:
+	{
+		test_write__success();
+		if (pBuffer != NULL)
+		{
+			printf("   Filled segment adress (&VA) is %p, size was %d, buffer was %c%c. ",
+				written, size, *pBuffer, *(pBuffer + 1));
+			__SLEEP_LONG;
+		}
+		else
+		{
+			printf("   There's no any segment in memory. ");
+		}
+		__SLEEP_LONG;
+		print_write_test_menu();
+		break;
+	}
+	case 2:
+	{
+		test_write__wrong_params();
+		printf("   Segment starting adress (&VA) expected to be is %p, but there's no such segment. ",
+			*freed_seg_starting_adress);
+		__SLEEP_LONG;
+		print_write_test_menu();
+		break;
+	}
+	case 3:
+	{
+		test_write__unknown_error();
+		__SLEEP_LONG;
+		print_write_test_menu();
+		break;
+	}
+	case 0:
+	{
+		exit(0);
+	}
+	case -1:
+	{
+		print_main_menu();
+		break;
+	}
+	default:
+	{
+		__PRINT_UNCORRECT_CHOOSE_WARN;
+		__SLEEP_SHORT;
+		print_write_test_menu();
+		break; // а что если его убрать? // ничего
+	}
+	}
 }
 
 void print_read_test_menu ()
