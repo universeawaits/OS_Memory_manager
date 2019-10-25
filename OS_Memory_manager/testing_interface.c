@@ -323,9 +323,8 @@ void print_write_test_menu ()
 		test_write__success();
 		if (pBuffer != NULL)
 		{
-			printf("   Filled segment adress (&VA) is %p, size was %d, buffer was %c%c. ",
+			printf("   Filled adress (&VA) is %p, size was %d, buffer was %c%c. ",
 				written, size, *pBuffer, *(pBuffer + 1));
-			__SLEEP_LONG;
 		}
 		else
 		{
@@ -338,8 +337,14 @@ void print_write_test_menu ()
 	case 2:
 	{
 		test_write__wrong_params();
-		printf("   Segment starting adress (&VA) expected to be is %p, but there's no such segment. ",
-			*freed_seg_starting_adress);
+		if (pBuffer != NULL)
+		{
+			printf("   Filled adress (&VA) may be %p, but the size of buffer was 0. ", written);
+		}
+		else
+		{
+			printf("   There's no any segment in memory. ");
+		}
 		__SLEEP_LONG;
 		print_write_test_menu();
 		break;

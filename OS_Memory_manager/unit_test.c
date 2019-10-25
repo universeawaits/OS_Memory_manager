@@ -118,10 +118,10 @@ void test_write__success()
 	segment* segment = _segment_table->records[0].segment_ptr;
 	size = 2;
 
-	if (segment !=  NULL)
+	if (segment != NULL)
 	{
 		VA filled_adress = _segment_table->records[0].segment_ptr->starting_va;
-		pBuffer = (VA)malloc(sizeof(*pBuffer) * size);
+		pBuffer = (VA)malloc(size);
 
 		if (pBuffer != NULL)
 		{
@@ -136,22 +136,35 @@ void test_write__success()
 			assert(memcmp(*written, filled_adress, size) == 0);
 		}
 	}
+	else
+	{
+		pBuffer == NULL;
+	}
 }
 
 void test_write__wrong_params()
 {
-	/*VA* filled_adress = _vas + _vas_size + 1;
+	segment* segment = _segment_table->records[0].segment_ptr;
 	size = 2;
 
-	pBuffer = (VA)malloc(sizeof(*pBuffer) * size);
+	if (segment != NULL)
+	{
+		VA filled_adress = _segment_table->records[0].segment_ptr->starting_va;
+		pBuffer = (VA)malloc(size);
 
-	if (pBuffer != NULL) {
-		*pBuffer = 'a';
-		*(pBuffer + 1) = 'b';
+		if (pBuffer != NULL)
+		{
+			*pBuffer = 'a';
+			*(pBuffer + 1) = 'b';
 
-		int write_return_code = _write(*filled_adress, *pBuffer, 2);
-		assert(write_return_code == _WRONG_PARAMS);
-	}*/
+			int write_return_code = _write(filled_adress, pBuffer, 0);
+			assert(write_return_code == _WRONG_PARAMS);
+		}
+	}
+	else
+	{
+		pBuffer == NULL;
+	}
 }
 
 void test_write__unknown_error()
