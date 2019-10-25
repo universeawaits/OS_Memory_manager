@@ -5,6 +5,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h> 
 
 void init_testing_env()
 {
@@ -12,6 +13,7 @@ void init_testing_env()
 	freed_seg_starting_adress = (VA**)malloc(sizeof(VA*));
 	*freed_seg_starting_adress = (VA*)malloc(sizeof(VA));
 	written = (VA*)malloc(sizeof(VA));
+	*written = (VA)malloc(1);
 	//written = (VA)malloc.....
 }
 
@@ -129,7 +131,9 @@ void test_write__success()
 			int write_return_code = _write(filled_adress, pBuffer, 2);
 			assert(write_return_code == _SUCCESS);
 
-			*written = *filled_adress;
+			*written = filled_adress;
+
+			assert(memcmp(*written, filled_adress, size) == 0);
 		}
 	}
 }
