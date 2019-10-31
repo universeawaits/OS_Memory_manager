@@ -156,14 +156,12 @@
     <ClCompile Include="OS_Memory_manager.c" />
     <ClCompile Include="segment_table.c" />
     <ClCompile Include="adress_spaces.c" />
-    <ClCompile Include="testing_interface.c" />
     <ClCompile Include="unit_test.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mmemory.h" />
     <ClInclude Include="segment_table.h" />
     <ClInclude Include="adress_spaces.h" />
-    <ClInclude Include="testing_interface.h" />
     <ClInclude Include="unit_test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
