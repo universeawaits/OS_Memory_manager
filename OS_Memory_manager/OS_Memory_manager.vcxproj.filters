@@ -30,9 +30,6 @@
     <ClCompile Include="unit_test.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="testing_interface.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mmemory.h">
@@ -45,9 +42,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="unit_test.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="testing_interface.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,4 @@
 ﻿#include "unit_test.h"
-#include "testing_interface.h"
 
 int main ()
 {
