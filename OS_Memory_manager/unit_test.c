@@ -1,4 +1,4 @@
-#include "adress_spaces.h"
+﻿#include "adress_spaces.h"
 #include "segment_table.h"
 #include "mmemory.h"
 #include "unit_test.h"
@@ -100,7 +100,7 @@ void test_write__success()
 
 	for (uint i = 0; i < write_buffer_size; i++)
 	{
-		*(*write_buffer + i) = '1' + i;
+		*(*write_buffer + i) = '♥' + i;
 	}
 
 	int return_code = _write(segment_starting_adress, *write_buffer, write_buffer_size);
@@ -118,7 +118,7 @@ void test_write__wrong_params()
 	segment* segment = _segment_table->records[0].segment_ptr;
 	VA segment_starting_adress = *_vas;
 
-	write_buffer_size = segment->size + 1;
+	write_buffer_size = segment->size;
 	*write_buffer = (VA)malloc(write_buffer_size);
 
 	for (uint i = 0; i < write_buffer_size; i++)
@@ -159,11 +159,6 @@ void test_read__success()
 	read_buffer_size = segment->size;
 	*read_buffer = (VA)malloc(read_buffer_size);
 
-	for (uint i = 0; i < read_buffer_size; i++)
-	{
-		*(*read_buffer + i) = i + 42;
-	}
-
 	int return_code = _read(segment_starting_adress, *read_buffer, read_buffer_size);
 	assert(return_code == _SUCCESS && memcmp(
 		segment_starting_adress,
@@ -177,16 +172,13 @@ void test_read__wrong_params()
 	segment* segment = _segment_table->records[0].segment_ptr;
 	VA segment_starting_adress = *_vas;
 
-	read_buffer_size = segment->size + 1;
+	read_buffer_size = segment->size;
 	*read_buffer = (VA)malloc(read_buffer_size);
-
-	for (uint i = 0; i < read_buffer_size; i++)
-	{
-		*(*read_buffer + i) = i + 42;
-	}
 
 	int return_code = _read(segment_starting_adress - 1, *read_buffer, read_buffer_size);
 	assert(return_code == _WRONG_PARAMS);
+
+	*read_adress = NULL;
 }
 
 void test_read__segment_access_violation() 
@@ -199,6 +191,8 @@ void test_read__segment_access_violation()
 
 	int return_code = _read(segment_starting_adress, *read_buffer, read_buffer_size);
 	assert(return_code == _SEGMENT_ACCESS_VIOLATION);
+
+	*read_adress = NULL;
 }
 
 void print_malloc_results()
@@ -257,7 +251,7 @@ void print_read_results()
 	}
 	else
 	{
-		printf("Read memory size may be %d, but is are no such adress or segmentation fault occured", write_buffer_size);
+		printf("Read memory size may be %d, but is are no such adress or segmentation fault occured", read_buffer_size);
 	}
 }
 
