@@ -152,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="load_test.c" />
     <ClCompile Include="mmemory.c" />
     <ClCompile Include="OS_Memory_manager.c" />
     <ClCompile Include="segment_table.c" />
@@ -159,6 +160,7 @@
     <ClCompile Include="unit_test.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="load_test.h" />
     <ClInclude Include="mmemory.h" />
     <ClInclude Include="segment_table.h" />
     <ClInclude Include="adress_spaces.h" />
