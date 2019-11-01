@@ -1,6 +1,5 @@
 ﻿#include "adress_spaces.h"
 #include "segment_table.h"
-#include "mmemory.h"
 #include "unit_test.h"
 
 #include <assert.h>
@@ -9,8 +8,8 @@
 #include <stdio.h>
 
 
-size_t pgSize = 100;
-uint n = 10;
+size_t pgSize = 1000;
+uint n = 100;
 
 size_t malloc_size;
 VA* malloc_ptr;
@@ -26,9 +25,9 @@ size_t read_buffer_size;
 VA* read_buffer;
 VA* read_adress;
 
-void init_testing_env()
+void init_unit_testing_env()
 {
-	_init(n, pgSize);
+	assert(_init(n, pgSize) == _SUCCESS);
 
 	malloc_ptr = (VA*)malloc(sizeof(VA));
 	freed_ptr = (VA*)malloc(sizeof(VA));
@@ -42,7 +41,7 @@ void init_testing_env()
 
 void test_malloc__success()
 {
-	malloc_size = n * pgSize / 5;
+	malloc_size = n * pgSize / 1000;
 
 	int return_code = _malloc(malloc_ptr, malloc_size);
 	assert(return_code == _SUCCESS);
@@ -58,6 +57,8 @@ void test_malloc__wrong_params()
 
 void test_malloc__memory_lack()
 {
+	malloc_size = n * pgSize / 2;
+	_malloc(malloc_ptr, malloc_size);
 	malloc_size = _pas_size - 2;
 
 	int return_code = _malloc(malloc_ptr, malloc_size);
@@ -100,7 +101,7 @@ void test_write__success()
 
 	for (uint i = 0; i < write_buffer_size; i++)
 	{
-		*(*write_buffer + i) = '♥' + i;
+		*(*write_buffer + i) = '1' + i;
 	}
 
 	int return_code = _write(segment_starting_adress, *write_buffer, write_buffer_size);
@@ -256,7 +257,7 @@ void print_read_results()
 }
 
 
-void run_all_tests()
+void run_all_unit_tests()
 {
 	test_malloc__success();
 	print_malloc_results();

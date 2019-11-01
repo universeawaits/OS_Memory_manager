@@ -30,7 +30,7 @@ segment;
 #define _PAS_MIN_SIZE (\
 	sizeof(segment_table) + sizeof(st_record) * _ST_MAX_RECORDS_COUNT \
 	)
-#define _PAS_MAX_SIZE 10 * 1024			// ћаксимальный размер физического адресного пространства (в байтах)
+#define _PAS_MAX_SIZE 100 * 1024			// ћаксимальный размер физического адресного пространства (в байтах)
 #define _VAS_MAX_SIZE _PAS_MAX_SIZE		// ћаксимальный размер виртуального адресного пространства (в байтах)
 #define _FORBIDDEN_ADRESS_OFFSET -1		// јдрес вне выделенного адресного пространсва
 #define _VAS_NAME "Virtual adress space"

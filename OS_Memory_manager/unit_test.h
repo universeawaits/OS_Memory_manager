@@ -1,8 +1,8 @@
 #include "mmemory.h"
 
-void init_testing_env();
+void init_unit_testing_env();
 
-void run_all_tests();
+void run_all_unit_tests();
 
 void test_malloc__success();
 void test_malloc__wrong_params();

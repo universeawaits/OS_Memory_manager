@@ -14,7 +14,7 @@
 **/
 
 // Максимальное количество записей в таблице сегментов
-#define _ST_MAX_RECORDS_COUNT 15
+#define _ST_MAX_RECORDS_COUNT 100
 #define _NO_SEGMENT -1
 
 // Тип, описывающий запись в таблице сегментов
