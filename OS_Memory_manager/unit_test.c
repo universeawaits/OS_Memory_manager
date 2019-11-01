@@ -166,6 +166,8 @@ void test_read__success()
 		*read_buffer,
 		read_buffer_size
 	) == 0);
+
+	*read_adress = segment_starting_adress;
 }
 
 void test_read__wrong_params() 
